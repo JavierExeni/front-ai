@@ -1,0 +1,66 @@
+<!-- <div class="grid grid-cols-1 lg:grid-cols-2 h-screen">
+  <div class="flex justify-center items-center">
+    <div class="max-w-96">
+      <div class="flex justify-center mb-10">
+        <img class="w-30" src="images/logo.png" alt="logo_hqdm" />
+      </div>
+
+      <h2 class="text-xl font-semibold">Sign in</h2>
+      <p class="text-sm my-2 text-[#7f7f7f]">
+        Enter your email and password below to log into your account
+      </p>
+      <form class="flex flex-col gap-4">
+        <div>
+          <label class="label text-base mb-2 text-base-content">Email</label>
+          <input type="email" class="input w-full placeholder:text-[#7f7f7f]" placeholder="Email" />
+        </div>
+        <div>
+          <label class="label text-sm flex justify-between mb-2">
+            <span class="text-base-content">Password</span>
+            <a class="link link-hover">Forgot password?</a></label
+          >
+          <span class="relative">
+            <input
+              [type]="eyeLock() ? 'password' : 'text'"
+              class="input w-full placeholder:text-[#7f7f7f]"
+              placeholder="Password"
+            />
+            @if (eyeLock()) {
+              <i (click)="eyeLock.set(false)" class="absolute z-10 cursor-pointer text-[#7f7f7f] hover:text-base-content ease-in-out transition-all duration-200 right-3 top-2 fa-regular fa-eye-slash"></i>
+            }@else {
+              <i (click)="eyeLock.set(true)" class="absolute z-10 cursor-pointer text-[#7f7f7f] hover:text-base-content ease-in-out transition-all duration-200 right-3 top-2 fa-regular fa-eye"></i>
+            }
+          </span>
+        </div>
+
+        <button class="btn btn-neutral text-base">Login</button>
+      </form>
+      <div class="divider text-xs">OR CONTINUE WITH</div>
+
+      @if (errorMessage()) {
+        <div class="alert alert-error mb-4">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <button
+        type="button"
+        (click)="onGoogleLogin()"
+        [disabled]="isLoading()"
+        class="text-white w-full cursor-pointer ease-in-out transition-all duration-200 bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#4285F4]/55 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        @if (isLoading()) {
+          <span class="loading loading-spinner loading-sm mr-2"></span>
+          Signing in...
+        } @else {
+          <i class="fa-brands fa-google mr-1"></i>
+          Sign in with Google
+        }
+      </button>
+    </div>
+  </div>
+  <div class="relative overflow-hidden bg-[#191919] hidden lg:block">
+    <img class="w-5xl absolute top-40 -right-12" src="images/dashboard.png" alt="dashboard" />
+  </div>
+</div> -->

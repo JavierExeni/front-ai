@@ -1,0 +1,87 @@
+<aside
+  class="fixed lg:relative flex flex-col w-64 lg:w-63.5 h-screen bg-base-100 text-base-content border-r border-base-300 z-50 transform transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0"
+>
+  <!-- Companny Selector -->
+  <div class="dropdown w-full">
+    <div
+      tabindex="0"
+      role="button"
+      class="btn btn-ghost px-4 py-2 h-16 rounded-none flex justify-between items-center border-x-0 border-t-0 border-b border-neutral"
+    >
+      <div class="flex items-center gap-2">
+        <span class="flex items-center justify-center bg-base-200 p-2 py-2 rounded-lg">
+          <i class="fa-regular fa-building text-2xl text-primary"></i>
+        </span>
+        <p class="flex flex-col text-start">
+          <span class="font-semibold">Exeni</span>
+          <span class="text-xs text-base-content/60">Company</span>
+        </p>
+      </div>
+
+      <!-- <i class="text-xs text-[#7f7f7f] fa-solid fa-arrow-down"></i> -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-chevron-down w-4 h-4 text-base-content/60 shrink-0"
+      >
+        <path d="m6 9 6 6 6-6"></path>
+      </svg>
+    </div>
+
+    <!-- content dropdown -->
+    <div
+      tabindex="0"
+      class="dropdown-content card card-sm card-border rounded-sm bg-base-200 z-1 w-64 shadow-md border border-base-300"
+    >
+      <div class="card-body">
+        <p class="flex justify-between items-center">
+          <span class="text-sm font-semibold">Select company</span>
+
+          <button class="btn btn-ghost btn-sm">
+            <i class="fa-solid fa-plus text-[10px] text-primary"></i>
+          </button>
+        </p>
+
+        <ul class="menu bg-base-200 rounded-box rounded-sm w-56">
+          <li><a>Item 1</a></li>
+          <li><a>Item 2</a></li>
+          <li><a>Item 3</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <ul class="menu w-full pr-0">
+      @for (menu of options; track $index) {
+      <li>
+        <h2 class="menu-title text-xs text-base-content/50 uppercase">{{ menu.title }}</h2>
+        <ul class="p-0 flex flex-col gap-1">
+          @for (item of menu.childrens; track $index; let first = $first; let last = $last) {
+
+          <li class="relative">
+            <a
+              [routerLink]="[item.route]"
+              routerLinkActive="bg-primary/10 text-primary border-l-2 border-primary font-semibold"
+              [class.rounded-t-xs]="first"
+              [class.rounded-b-xs]="last"
+              class="text-sm px-3 py-2 grid grid-cols-[16px_1fr] items-center gap-2 rounded-none relative text-base-content/80 hover:text-base-content hover:bg-base-200 transition-colors"
+            >
+              <i class="text-sm" [class]="item.icon"></i>
+              <span>{{ item.name }}</span>
+            </a>
+          </li>
+          }
+        </ul>
+      </li>
+      }
+    </ul>
+  </div>
+</aside>

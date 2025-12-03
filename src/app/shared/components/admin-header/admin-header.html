@@ -1,0 +1,39 @@
+<div class="navbar bg-base-100 shadow-sm border-b border-base-300">
+  <div class="flex justify-end items-center w-full px-4 gap-4">
+    <!-- User Profile Dropdown -->
+    <div class="dropdown dropdown-end cursor-pointer">
+      <div class="flex gap-3 items-center" tabindex="0">
+        <p class="flex flex-col text-right">
+          <span class="text-sm font-semibold text-base-content">Javier Enrique Villagomez Exeni</span>
+          <span class="text-xs text-base-content/60">jvexeni@gmail.com</span>
+        </p>
+        <div role="button" class="btn btn-ghost btn-circle avatar ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+          <div class="w-10 rounded-full">
+            <img
+              alt="User profile"
+              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- content dropdown -->
+      <ul
+        tabindex="-1"
+        class="menu menu-sm dropdown-content bg-base-200 rounded-sm z-1 mt-3 w-52 p-2 shadow-lg border border-base-300"
+      >
+        <li>
+          <a class="justify-between hover:bg-base-200 hover:text-primary transition-colors">
+            Profile
+            <span class="badge badge-primary badge-sm">New</span>
+          </a>
+        </li>
+        <li><a class="hover:bg-base-200 hover:text-primary transition-colors">Settings</a></li>
+
+        <li class="border-t border-base-300 mt-1 pt-1">
+          <a class="text-error hover:bg-error/10 transition-colors rounded-md">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
