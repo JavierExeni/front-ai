@@ -3,7 +3,8 @@
     "allow": [
       "mcp__context7__resolve-library-id",
       "mcp__context7__get-library-docs",
-      "Bash(dir /s /b D:workhqdmhqdm-frontsrc)"
+      "Bash(dir /s /b D:workhqdmhqdm-frontsrc)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

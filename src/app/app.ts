@@ -21,7 +21,18 @@ export class App {
     // Effect to apply theme to HTML element when it changes
     effect(() => {
       if (this.isBrowser) {
+        const isDark = this.theme() === 'hqdm-dark';
+
+        // Set DaisyUI theme
         document.documentElement.setAttribute('data-theme', this.theme());
+
+        // Set PrimeNG dark mode class
+        if (isDark) {
+          document.documentElement.classList.add('app-dark-mode');
+        } else {
+          document.documentElement.classList.remove('app-dark-mode');
+        }
+
         localStorage.setItem('theme', this.theme());
       }
     });

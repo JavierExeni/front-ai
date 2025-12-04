@@ -1,11 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "daisyui";
 
 /* Light Theme - Default */
 @plugin "daisyui/theme" {
-  name: "hqdm-light";
+  name: 'hqdm-light';
   default: true;
   color-scheme: light;
 
@@ -61,7 +61,7 @@
 
 /* Dark Theme - Matches prefers-color-scheme */
 @plugin "daisyui/theme" {
-  name: "hqdm-dark";
+  name: 'hqdm-dark';
   prefersdark: true;
   color-scheme: dark;
 
@@ -76,11 +76,11 @@
   --color-primary-content: oklch(100% 0 0);
 
   /* Secondary - Softer purple complement */
-  --color-secondary: oklch(72% 0.20 320);
+  --color-secondary: oklch(72% 0.2 320);
   --color-secondary-content: oklch(100% 0 0);
 
   /* Accent - Bright cyan for high contrast */
-  --color-accent: oklch(78% 0.20 200);
+  --color-accent: oklch(78% 0.2 200);
   --color-accent-content: oklch(11% 0.005 280);
 
   /* Neutral - Subtle grays on black */
@@ -88,10 +88,10 @@
   --color-neutral-content: oklch(92% 0.005 280);
 
   /* Status colors - Optimized for black backgrounds */
-  --color-info: oklch(72% 0.20 240);
+  --color-info: oklch(72% 0.2 240);
   --color-info-content: oklch(11% 0.005 280);
 
-  --color-success: oklch(72% 0.20 150);
+  --color-success: oklch(72% 0.2 150);
   --color-success-content: oklch(11% 0.005 280);
 
   --color-warning: oklch(82% 0.18 85);
@@ -113,4 +113,9 @@
   --border: 1px;
   --depth: 1;
   --noise: 0;
+}
+
+* {
+  transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out,
+    color 0.3s ease-in-out;
 }

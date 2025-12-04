@@ -1,1 +1,88 @@
-<p>contacts works!</p>
+<div class="space-y-6">
+  <!-- Header Section -->
+  <div class="space-y-2">
+    <h1 class="text-2xl font-bold text-base-content">Contacts</h1>
+    <p class="text-base-content/70">Manage and organize your leads and customers.</p>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <!-- Search and Filter -->
+    <div class="flex items-center gap-2">
+      <input
+        type="text"
+        placeholder="Filter contacts..."
+        class="input input-bordered input-sm bg-base-100 text-base-content w-full md:w-56"
+      />
+      <button class="btn btn-sm btn-neutral">
+        <i class="fa-solid fa-sliders"></i>
+        Filter
+      </button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2 flex-wrap">
+      <button class="btn btn-sm btn-neutral">
+        <i class="fa-solid fa-download"></i>
+        Import From CRM
+      </button>
+      <button class="btn btn-sm btn-neutral">
+        <i class="fa-solid fa-file-csv"></i>
+        Import From CSV
+      </button>
+      <button (click)="visible = true" class="btn btn-sm btn-primary">
+        <i class="fa-solid fa-user-plus"></i>
+        Create Contact
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Card -->
+  <!-- <div class="card bg-base-100 shadow-sm border border-base-300">
+    <div class="card-body p-0">
+
+    </div>
+  </div> -->
+  <div class="rounded-lg overflow-hidden mt-4">
+    <p-table
+      [value]="products"
+      [paginator]="true"
+      [rows]="10"
+      [first]="first"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      (onPage)="pageChange($event)"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [(selection)]="selectedProducts"
+      dataKey="code"
+      class="text-sm"
+      paginatorStyleClass="rounded-none"
+    >
+      <ng-template #header>
+        <tr>
+          <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Quantity</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-product>
+        <tr>
+          <td>
+            <p-tableCheckbox [value]="product" />
+          </td>
+          <td>{{ product.code }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.quantity }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<!-- Dialog Contact Form -->
+<p-dialog header="Create Contact" [modal]="true" [(visible)]="visible">
+  <contact-form></contact-form>
+</p-dialog>
