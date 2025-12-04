@@ -1,0 +1,50 @@
+<div class="flex gap-1">
+  <!-- Country selector -->
+  <p-select
+    [options]="countries()"
+    appendTo="body"
+    [(ngModel)]="selectedCountry"
+    (onChange)="onCountryChange($event.value)"
+    optionLabel="name"
+    [filter]="true"
+    filterBy="name,dialCode"
+    [showClear]="false"
+    [disabled]="disabled()"
+    placeholder="Select country"
+    size="small"
+    class="w-[120px] max-w-[130px]"
+    >
+    <!-- Selected item template -->
+    <ng-template #selectedItem let-country>
+      @if (country) {
+        <div class="flex items-center gap-2">
+          <img [src]="country.flagUrl" [alt]="country.name" class="flag-image" />
+          <span class="font-semibold">{{ country.dialCode }}</span>
+        </div>
+      }
+    </ng-template>
+
+    <!-- Dropdown item template -->
+    <ng-template #item let-country>
+      <div class="flex items-center gap-2">
+        <img class="w-5" [src]="country.flagUrl" [alt]="country.name" class="flag-image" />
+        <span class="flex-1">{{ country.name }}</span>
+        <span class="text-gray-500">{{ country.dialCode }}</span>
+      </div>
+    </ng-template>
+  </p-select>
+
+  <!-- Phone number input -->
+  <div class="flex-1">
+    <input
+      pInputText
+      type="tel"
+      [value]="phoneNumber()"
+      (input)="onPhoneNumberChange($any($event.target).value)"
+      (blur)="onBlur()"
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      pSize="small"
+      class="w-full" />
+  </div>
+</div>

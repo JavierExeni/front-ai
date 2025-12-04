@@ -1,13 +1,18 @@
-<div class="navbar bg-base-100 shadow-sm border-b border-base-300">
+<div class="navbar bg-base-100 border-b border-base-300">
   <div class="flex justify-end items-center w-full px-4 gap-4">
     <!-- User Profile Dropdown -->
     <div class="dropdown dropdown-end cursor-pointer">
       <div class="flex gap-3 items-center" tabindex="0">
         <p class="flex flex-col text-right">
-          <span class="text-sm font-semibold text-base-content">Javier Enrique Villagomez Exeni</span>
+          <span class="text-sm font-semibold text-base-content"
+            >Javier Enrique Villagomez Exeni</span
+          >
           <span class="text-xs text-base-content/60">jvexeni@gmail.com</span>
         </p>
-        <div role="button" class="btn btn-ghost btn-circle avatar ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
+        <div
+          role="button"
+          class="btn btn-ghost btn-circle avatar ring-2 ring-primary/20 hover:ring-primary/40 transition-all"
+        >
           <div class="w-10 rounded-full">
             <img
               alt="User profile"
@@ -29,9 +34,15 @@
           </a>
         </li>
         <li><a class="hover:bg-base-200 hover:text-primary transition-colors">Settings</a></li>
+        <li><a class="hover:bg-base-200 hover:text-primary transition-colors">Subscription</a></li>
 
         <li class="border-t border-base-300 mt-1 pt-1">
-          <a class="text-error hover:bg-error/10 transition-colors rounded-md">Logout</a>
+          <a
+            class="text-error hover:bg-error/10 transition-colors rounded-md flex items-center gap-1"
+          >
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span class="pb-0.5">Sign out</span>
+          </a>
         </li>
       </ul>
     </div>

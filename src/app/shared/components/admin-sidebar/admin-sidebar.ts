@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { menuOptions } from '../../const/menu-options';
+import { menuOptions } from '../../constants/menu-options';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'admin-sidebar',
@@ -9,5 +10,10 @@ import { menuOptions } from '../../const/menu-options';
   styles: ``,
 })
 export class AdminSidebar {
- options = menuOptions;
+  readonly themeService = inject(ThemeService);
+  readonly options = menuOptions;
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 }

@@ -9,15 +9,7 @@
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <!-- Search and Filter -->
     <div class="flex items-center gap-2">
-      <input
-        type="text"
-        placeholder="Filter contacts..."
-        class="input input-bordered input-sm bg-base-100 text-base-content w-full md:w-56"
-      />
-      <button class="btn btn-sm btn-neutral">
-        <i class="fa-solid fa-sliders"></i>
-        Filter
-      </button>
+      <input type="text" pInputText pSize="small" placeholder="Filter contacts..." />
     </div>
 
     <!-- Action Buttons -->
@@ -37,12 +29,6 @@
     </div>
   </div>
 
-  <!-- Table Card -->
-  <!-- <div class="card bg-base-100 shadow-sm border border-base-300">
-    <div class="card-body p-0">
-
-    </div>
-  </div> -->
   <div class="rounded-lg overflow-hidden mt-4">
     <p-table
       [value]="products"
@@ -61,10 +47,12 @@
       <ng-template #header>
         <tr>
           <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Quantity</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th style="width: 4rem"></th>
         </tr>
       </ng-template>
       <ng-template #body let-product>
@@ -76,6 +64,22 @@
           <td>{{ product.name }}</td>
           <td>{{ product.category }}</td>
           <td>{{ product.quantity }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>
+            <div class="flex justify-center items-center">
+              <button
+                #menuButton
+                pButton
+                type="button"
+                icon="fa-solid fa-ellipsis-vertical"
+                (click)="showMenu($event, product, menu)"
+                class="p-button-text p-button-rounded p-button-sm"
+                pTooltip="Actions"
+                tooltipPosition="left"
+              ></button>
+              <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body"></p-menu>
+            </div>
+          </td>
         </tr>
       </ng-template>
     </p-table>
@@ -83,6 +87,11 @@
 </div>
 
 <!-- Dialog Contact Form -->
-<p-dialog header="Create Contact" [modal]="true" [(visible)]="visible">
+<p-dialog
+  header="Create Contact"
+  [modal]="true"
+  [(visible)]="visible"
+  styleClass="w-[300px] md:w-[450px]"
+>
   <contact-form></contact-form>
 </p-dialog>

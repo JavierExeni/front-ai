@@ -5,16 +5,34 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
-import { ContactForm } from "./contact-form/contact-form";
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
+import { Menu } from 'primeng/menu';
+
+import { ContactForm } from './contact-form/contact-form';
 
 @Component({
   selector: 'app-contacts',
-  imports: [TableModule, ButtonModule, DialogModule, FormsModule, CommonModule, ContactForm],
+  imports: [
+    TableModule,
+    ButtonModule,
+    DialogModule,
+    FormsModule,
+    CommonModule,
+    InputTextModule,
+    TooltipModule,
+    MenuModule,
+    ContactForm,
+  ],
   templateUrl: './contacts.html',
   styles: ``,
 })
 export default class Contacts {
   visible: boolean = false;
+  menuItems: MenuItem[] = [];
+  selectedContact: any = null;
 
   first = 0;
 
@@ -96,5 +114,40 @@ export default class Contacts {
 
   isFirstPage(): boolean {
     return this.products ? this.first === 0 : true;
+  }
+
+  showMenu(event: Event, contact: any, menu: Menu) {
+    this.selectedContact = contact;
+    this.menuItems = [
+      {
+        label: 'Edit',
+        icon: 'fa-regular fa-pen-to-square',
+        command: () => this.editContact(contact),
+      },
+      {
+        label: 'Delete',
+        icon: 'fa-regular fa-trash-can',
+        styleClass: 'text-red-500',
+        command: () => this.deleteContact(contact),
+      },
+    ];
+    menu.toggle(event);
+  }
+
+  editContact(contact: any) {
+    console.log('Editing contact:', contact);
+    // Aquí puedes agregar la lógica para editar
+    this.visible = true;
+  }
+
+  deleteContact(contact: any) {
+    console.log('Deleting contact:', contact);
+    // Aquí puedes agregar la lógica para eliminar
+    if (confirm('Are you sure you want to delete this contact?')) {
+      const index = this.products.indexOf(contact);
+      if (index > -1) {
+        this.products.splice(index, 1);
+      }
+    }
   }
 }

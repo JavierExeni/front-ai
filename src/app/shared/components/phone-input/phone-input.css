@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Estilos para las imágenes de banderas */
+.flag-image {
+  width: 24px;
+  height: 18px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: inline-block;
+  vertical-align: middle;
+}
