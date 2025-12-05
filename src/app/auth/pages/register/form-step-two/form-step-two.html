@@ -1,0 +1,105 @@
+<div class="card card-border border-base-300 grid grid-cols-2 overflow-hidden">
+  <div class="bg-base-200 p-8 grid grid-rows-[auto_1fr]">
+    <!-- Header -->
+    <div class="mb-6">
+      <p class="text-sm text-base-content/60 mb-2">2/4</p>
+      <h2 class="text-2xl font-bold mb-2">Company Information</h2>
+      <p class="text-sm text-base-content/70">Please enter your basic company information below.</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="companyInfoForm" (ngSubmit)="onSubmit()" class="h-full flex flex-col justify-between">
+      <div class="flex flex-col gap-6">
+        <!-- Company Name -->
+        <div class="relative flex flex-col gap-2">
+          <label for="companyName" class="text-sm font-medium">Company Name</label>
+          <input
+            pInputText
+            id="companyName"
+            formControlName="companyName"
+            placeholder="Enter company name"
+            pSize="small"
+            class="w-full"
+          />
+          @if (companyInfoForm.get('companyName')?.invalid &&
+          companyInfoForm.get('companyName')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Company name is required.</small>
+          }
+        </div>
+
+        <!-- Website -->
+        <div class="relative flex flex-col gap-2">
+          <label for="website" class="text-sm font-medium">Website</label>
+          <input
+            pInputText
+            id="website"
+            formControlName="website"
+            placeholder="Enter website"
+            pSize="small"
+            class="w-full"
+          />
+          @if (companyInfoForm.get('website')?.invalid && companyInfoForm.get('website')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Website is required.</small>
+          }
+        </div>
+
+        <!-- Headquarters -->
+        <div class="relative flex flex-col gap-2">
+          <label for="headquarters" class="text-sm font-medium">Headquarters</label>
+          <input
+            pInputText
+            id="headquarters"
+            formControlName="headquarters"
+            placeholder="Enter headquarters"
+            pSize="small"
+            class="w-full"
+          />
+          @if (companyInfoForm.get('headquarters')?.invalid &&
+          companyInfoForm.get('headquarters')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Headquarters is required.</small>
+          }
+        </div>
+
+        <!-- Company Size -->
+        <div class="relative flex flex-col gap-2">
+          <label for="companySize" class="text-sm font-medium">Company Size</label>
+          <p-select
+            id="companySize"
+            [options]="companySizes()"
+            formControlName="companySize"
+            appendTo="body"
+            optionLabel="label"
+            placeholder="Select company size..."
+            size="small"
+            class="w-full"
+          />
+          @if (companyInfoForm.get('companySize')?.invalid &&
+          companyInfoForm.get('companySize')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Company size is required.</small>
+          }
+        </div>
+      </div>
+
+      <!-- Continue Button -->
+
+      <div class="flex items-center justify-between mt-8">
+        <button (click)="activateStep.emit(1)" type="button" class="btn btn-neutral px-4">
+          <i class="fa-solid fa-arrow-left pt-0.5"></i>
+          <span class="text-sm">
+            Back
+          </span>
+        </button>
+        <button type="submit" class="btn btn-primary px-4 flex items-center" [disabled]="companyInfoForm.invalid">
+          <span class="text-sm">
+            Next
+          </span>
+          <i class="fa-solid fa-arrow-right pt-0.5"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div>
+    <img src="images/onboarding/image-2.png" alt="step-2" class="w-full h-full object-cover" />
+  </div>
+</div>

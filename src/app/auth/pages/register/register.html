@@ -1,0 +1,89 @@
+<div class="py-20">
+  <div class="w-4xl m-auto">
+    <div>
+      <img class="w-30 m-auto" src="images/logo.png" alt="logo_hqdm" />
+    </div>
+    <p-stepper [(value)]="activeStep" [linear]="true" class="basis-160">
+      <p-step-list class="w-[80%] m-auto!">
+        <p-step [value]="1" class="flex flex-row flex-auto gap-2">
+          <ng-template #content let-activateCallback="activateCallback" let-value="value">
+            <button class="bg-transparent border-0 inline-flex items-center justify-center flex-col gap-2"
+              (click)="activateCallback()">
+              <span class="rounded-full border-2 w-9 h-9 inline-flex items-center justify-center" [ngClass]="{
+                  'bg-primary text-primary-contrast border-primary': value <= activeStep,
+                  'border-surface': value > activeStep
+                }">
+                <i class="fa-regular fa-user text-sm"></i>
+              </span>
+            </button>
+          </ng-template>
+        </p-step>
+
+        <p-step [value]="2" class="flex flex-row flex-auto gap-2">
+          <ng-template #content let-activateCallback="activateCallback" let-value="value">
+            <button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
+              <span class="rounded-full border-2 w-9 h-9 inline-flex items-center justify-center" [ngClass]="{
+                  'bg-primary text-primary-contrast border-primary': value <= activeStep,
+                  'border-surface': value > activeStep
+                }">
+                <i class="fa-regular fa-building text-sm pr-0.5"></i>
+              </span>
+            </button>
+          </ng-template>
+        </p-step>
+
+        <p-step [value]="3" class="flex flex-row flex-auto gap-2">
+          <ng-template #content let-activateCallback="activateCallback" let-value="value">
+            <button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
+              <span class="rounded-full border-2 w-9 h-9 inline-flex items-center justify-center" [ngClass]="{
+                  'bg-primary text-primary-contrast border-primary': value <= activeStep,
+                  'border-surface': value > activeStep
+                }">
+                <i class="fa-solid fa-bell-concierge text-sm"></i>
+              </span>
+            </button>
+          </ng-template>
+        </p-step>
+
+        <p-step [value]="4" class="flex flex-row flex-auto gap-2">
+          <ng-template #content let-activateCallback="activateCallback" let-value="value">
+            <button class="bg-transparent border-0 inline-flex flex-col gap-2" (click)="activateCallback()">
+              <span class="rounded-full border-2 w-9 h-9 inline-flex items-center justify-center" [ngClass]="{
+                  'bg-primary text-primary-contrast border-primary': value <= activeStep,
+                  'border-surface': value > activeStep
+                }">
+                <i class="fa-regular fa-paper-plane text-sm pt-0.5 pr-0.5"></i>
+              </span>
+            </button>
+          </ng-template>
+        </p-step>
+      </p-step-list>
+
+      <p-step-panels>
+        <p-step-panel [value]="1">
+          <ng-template #content let-activateCallback="activateCallback">
+            <form-step-one (activateStep)="activateCallback($event)"></form-step-one>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="2">
+          <ng-template #content let-activateCallback="activateCallback">
+            <form-step-two (activateStep)="activateCallback($event)"></form-step-two>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="3">
+          <ng-template #content let-activateCallback="activateCallback">
+            <form-step-three (activateStep)="activateCallback($event)"></form-step-three>
+          </ng-template>
+        </p-step-panel>
+
+        <p-step-panel [value]="4">
+          <ng-template #content let-activateCallback="activateCallback">
+            <form-step-four (activateStep)="activateCallback($event)"></form-step-four>
+          </ng-template>
+        </p-step-panel>
+      </p-step-panels>
+    </p-stepper>
+  </div>
+</div>

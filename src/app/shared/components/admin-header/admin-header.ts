@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Auth } from '../../../core/services/auth';
 
 @Component({
   selector: 'admin-header',
@@ -7,5 +8,9 @@ import { Component } from '@angular/core';
   styles: ``,
 })
 export class AdminHeader {
+  private authService = inject(Auth);
 
+  logout(): void {
+    this.authService.logout();
+  }
 }

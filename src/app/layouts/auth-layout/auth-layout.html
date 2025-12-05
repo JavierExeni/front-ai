@@ -1,0 +1,12 @@
+<div>
+  <router-outlet />
+</div>
+
+
+<p-button (onClick)="toggleTheme()" class="absolute bottom-5 left-5" styleClass="w-[45px] h-[45px] flex items-center justify-center" severity="contrast" [rounded]="true" [text]="true" [raised]="true">
+  <label class="swap swap-rotate">
+    <input type="checkbox" [checked]="themeService.isDark()" (change)="toggleTheme()" class="theme-controller" />
+    <i class="swap-on fa-solid fa-moon text-lg"></i>
+    <i class="swap-off fa-solid fa-sun text-lg"></i>
+  </label>
+</p-button>

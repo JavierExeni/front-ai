@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
 import { getCountries, getCountryCallingCode, CountryCode } from 'libphonenumber-js';
 import { COUNTRY_NAMES } from '../constants/country-names.constant';
-
-export interface Country {
-  name: string;
-  code: CountryCode; // ISO 3166-1 alpha-2 code
-  dialCode: string;
-  flagUrl: string; // URL de la imagen de la bandera
-}
-
+import { Country } from '../models/country';
 @Injectable({
   providedIn: 'root',
 })

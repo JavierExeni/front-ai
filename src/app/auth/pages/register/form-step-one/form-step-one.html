@@ -1,0 +1,109 @@
+<div class="card card-border border-base-300 grid grid-cols-2 overflow-hidden">
+  <div class="bg-base-200 p-8 grid grid-rows-[auto_1fr]">
+    <!-- Header -->
+    <div class="mb-6">
+      <p class="text-sm text-base-content/60 mb-2">1/4</p>
+      <h2 class="text-2xl font-bold mb-2">Personal Information</h2>
+      <p class="text-sm text-base-content/70">
+        Please fill in your personal information to continue.
+      </p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="personalInfoForm" (ngSubmit)="onSubmit()" class="h-full flex flex-col justify-between">
+      <div class="flex flex-col gap-6">
+        <!-- First Name -->
+        <div class="relative flex flex-col gap-2">
+          <label for="firstName" class="text-sm font-medium">First Name</label>
+          <input
+            pInputText
+            id="firstName"
+            formControlName="firstName"
+            pSize="small"
+            class="w-full"
+          />
+          @if (personalInfoForm.get('firstName')?.invalid &&
+          personalInfoForm.get('firstName')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">First name is required.</small>
+          }
+        </div>
+
+        <!-- Last Name -->
+        <div class="relative flex flex-col gap-2">
+          <label for="lastName" class="text-sm font-medium">Last Name</label>
+          <input pInputText id="lastName" formControlName="lastName" pSize="small" class="w-full" />
+          @if (personalInfoForm.get('lastName')?.invalid &&
+          personalInfoForm.get('lastName')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Last name is required.</small>
+          }
+        </div>
+
+        <!-- Country -->
+        <div class="relative flex flex-col gap-2">
+          <label for="country" class="text-sm font-medium">Country</label>
+          <p-select
+            id="country"
+            [options]="countries()"
+            formControlName="country"
+            appendTo="body"
+            optionLabel="name"
+            [filter]="true"
+            filterBy="name"
+            placeholder="Select country..."
+            size="small"
+            class="w-full"
+          >
+            <!-- Selected item template -->
+            <ng-template #selectedItem let-country>
+              @if (country) {
+              <div class="flex items-center gap-3 w-full">
+                <img
+                  [src]="country.flagUrl"
+                  [alt]="country.name"
+                  class="w-5 h-4 object-cover rounded"
+                />
+                <span>{{ country.name }}</span>
+              </div>
+              }
+            </ng-template>
+
+            <!-- Dropdown item template -->
+            <ng-template #item let-country>
+              <div class="flex items-center gap-3 w-full">
+                <img
+                  [src]="country.flagUrl"
+                  [alt]="country.name"
+                  class="w-5 h-4 object-cover rounded"
+                />
+                <span>{{ country.name }}</span>
+              </div>
+            </ng-template>
+          </p-select>
+          @if (personalInfoForm.get('country')?.invalid && personalInfoForm.get('country')?.touched)
+          {
+          <small class="absolute -bottom-5 left-1 text-red-500">Country is required.</small>
+          }
+        </div>
+
+        <!-- Phone Number -->
+        <div class="relative flex flex-col gap-2">
+          <label for="phoneNumber" class="text-sm font-medium">Phone Number</label>
+          <app-phone-input formControlName="phoneNumber" placeholder="Enter phone number" />
+          @if (personalInfoForm.get('phoneNumber')?.invalid &&
+          personalInfoForm.get('phoneNumber')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Phone number is required.</small>
+          }
+        </div>
+      </div>
+
+      <!-- Continue Button -->
+      <div class="mt-6">
+        <button type="submit" class="btn btn-primary w-full" [disabled]="personalInfoForm.invalid">Continue</button>
+      </div>
+    </form>
+  </div>
+
+  <div>
+    <img src="images/onboarding/image-1.png" alt="step-1" class="w-full h-full object-cover" />
+  </div>
+</div>

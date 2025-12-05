@@ -1,0 +1,44 @@
+<div class="card card-border border-base-300 overflow-hidden">
+  <div class="bg-base-200 p-8">
+    <div class="max-w-2xl mx-auto">
+      <div class="mb-8">
+        <p class="text-sm text-base-content/60 mb-2">3/4</p>
+        <h2 class="text-2xl font-bold mb-2">What industry is your business in?</h2>
+        <p class="text-sm text-base-content/70">
+          Select the industry that best describes your business
+        </p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-4">
+        @for (industry of industries; track industry.id) {
+        <button type="button" (click)="selectIndustry(industry.id)"
+          class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-base-content/8 transition-all duration-200 hover:border-primary/50"
+          [class.border-dashed]="industry.id === 'others'" [class.border-base-content/20]="industry.id === 'others'"
+          [class.border-base-300]="selectedIndustry() !== industry.id"
+          [class.bg-base-100]="selectedIndustry() !== industry.id"
+          [class.border-primary]="selectedIndustry() === industry.id"
+          [class.bg-primary/10]="selectedIndustry() === industry.id">
+          <i class="text-2xl text-base-content/70" [class]="industry.icon"></i>
+          <span class="text-sm text-center font-medium">{{ industry.name }}</span>
+        </button>
+        }
+      </div>
+
+      <div class="flex items-center justify-between mt-8">
+        <button (click)="activateStep.emit(2)" type="button" class="btn btn-neutral px-4">
+          <i class="fa-solid fa-arrow-left pt-0.5"></i>
+          <span class="text-sm">
+            Back
+          </span>
+        </button>
+        <button (click)="activateStep.emit(4)" type="button" class="btn btn-primary px-4 flex items-center"
+          [disabled]="!selectedIndustry()">
+          <span class="text-sm">
+            Next
+          </span>
+          <i class="fa-solid fa-arrow-right pt-0.5"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

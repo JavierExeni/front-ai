@@ -19,14 +19,9 @@ import {
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 import { Select } from 'primeng/select';
 import { InputText } from 'primeng/inputtext';
-import { CountryCodesService, Country } from '../../services/country-codes.service';
-
-export interface PhoneValue {
-  countryCode: string;
-  dialCode: string;
-  number: string;
-  fullNumber: string; // E.164 format: +15551234567
-}
+import { CountryCodesService } from '../../services/country-codes';
+import { Country } from '../../models/country';
+import { PhoneValue } from '../../models/phone-value';
 
 @Component({
   selector: 'app-phone-input',
@@ -92,7 +87,7 @@ export class PhoneInputComponent implements ControlValueAccessor, Validator {
 
   // Maneja el cambio de país
   onCountryChange(country: Country): void {
-    console.log(country)
+    console.log(country);
     this.selectedCountry.set(country);
     this.emitValue();
   }
