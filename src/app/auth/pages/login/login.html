@@ -70,10 +70,11 @@
 
       <button
         type="button"
-        [disabled]="isLoading()"
+        (click)="onGoogleSignIn()"
+        [disabled]="isLoading() || isGoogleLoading()"
         class="text-white w-full cursor-pointer ease-in-out transition-all duration-200 bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-base px-5 py-2.5 text-center inline-flex justify-center items-center dark:focus:ring-[#4285F4]/55 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        @if (isLoading()) {
+        @if (isGoogleLoading()) {
         <span class="loading loading-spinner loading-sm mr-2"></span>
         Signing in... } @else {
         <i class="fa-brands fa-google mr-1"></i>
@@ -83,7 +84,7 @@
       <div class="text-center mt-6">
         <p class="text-sm text-[#7f7f7f]">
           Don't have an account?
-          <a routerLink="/register" class="link link-primary font-semibold hover:underline ml-1">
+          <a [routerLink]="['/auth/register']" class="link link-primary font-semibold hover:underline ml-1">
             Create a new account now
           </a>
         </p>

@@ -14,8 +14,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Create HttpClient without interceptors using HttpBackend
   const http = new HttpClient(httpBackend);
 
-  // Skip adding auth header for login and refresh endpoints
-  const isAuthEndpoint = req.url.includes('/auth/user/login/') || req.url.includes('/auth/user/refresh/');
+  // Skip adding auth header for login, refresh, and Google auth endpoints
+  const isAuthEndpoint = req.url.includes('/auth/user/login/') ||
+                         req.url.includes('/auth/user/refresh/') ||
+                         req.url.includes('/auth/company/google/');
 
   if (isAuthEndpoint) {
     return next(req);

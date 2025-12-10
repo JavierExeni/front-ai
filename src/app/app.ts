@@ -1,12 +1,13 @@
 import { Component, signal, effect, inject, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
+import { NgxSonnerToaster } from 'ngx-sonner';
 
 type Theme = 'hqdm-light' | 'hqdm-dark';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NgxSonnerToaster],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

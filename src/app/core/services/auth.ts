@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { LoginCredentials, LoginResponse, TokenResponse, User } from '../models/user';
+import { LoginCredentials, LoginResponse, TokenResponse, User, GoogleAuthRequest } from '../models/user';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
@@ -13,6 +13,8 @@ export class Auth {
   private router = inject(Router);
 
   private readonly API_URL = `${environment.apiUrl}/auth/user`;
+  private readonly GOOGLE_AUTH_URL = `${environment.apiUrl}/auth/company/google`;
+  private readonly USERS_API_URL = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
 
@@ -32,8 +34,14 @@ export class Auth {
     const token = this.getAccessToken();
     if (token) {
       this.isAuthenticated.set(true);
-      // Optionally fetch user data if token exists
-      // You can add a method to fetch current user data from an endpoint
+      // Load user data automatically on app startup
+      this.loadCurrentUser().subscribe({
+        error: (error) => {
+          console.error('Failed to load user on startup:', error);
+          // If token is invalid or expired, logout
+          this.logout(false);
+        }
+      });
     } else {
       // Ensure state is clean if no token
       this.currentUser.set(null);
@@ -47,31 +55,99 @@ export class Auth {
   login(credentials: LoginCredentials): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/login/`, credentials).pipe(
       tap((response) => {
-        // Store tokens
-        this.setAccessToken(response.access);
-        this.setRefreshToken(response.refresh);
+        this.handleAuthSuccess(response);
+      })
+    );
+  }
 
-        // Set current user (excluding tokens)
-        const user: User = {
-          id: response.id,
-          email: response.email,
-          first_name: response.first_name,
-          last_name: response.last_name,
-          is_active: response.is_active,
-          avatar: response.avatar,
-          created_at: response.created_at,
-          updated_at: response.updated_at,
-          email_verified: response.email_verified,
-          phone: response.phone,
-          has_company: response.has_company,
-          platform_role: response.platform_role,
-          country: response.country,
-        };
+  /**
+   * Login with Google using the id_token
+   * @param idToken - The JWT credential from Google Identity Services
+   */
+  loginWithGoogle(idToken: string): Observable<LoginResponse> {
+    const payload: GoogleAuthRequest = {
+      access_token: idToken
+    };
 
+    return this.http.post<LoginResponse>(`${this.GOOGLE_AUTH_URL}/`, payload).pipe(
+      tap((response) => {
+        this.handleAuthSuccess(response);
+      })
+    );
+  }
+
+  /**
+   * Decode JWT token and extract user_id
+   */
+  private decodeToken(token: string): { user_id?: number } | null {
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get user ID from current token
+   */
+  private getUserIdFromToken(): number | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    const decoded = this.decodeToken(token);
+    return decoded?.user_id || null;
+  }
+
+  /**
+   * Load current user data from backend
+   */
+  loadCurrentUser(): Observable<User> {
+    const userId = this.getUserIdFromToken();
+    if (!userId) {
+      throw new Error('No user ID found in token');
+    }
+
+    return this.http.get<User>(`${this.USERS_API_URL}/${userId}/`).pipe(
+      tap((user) => {
+        console.log(user)
         this.currentUser.set(user);
         this.isAuthenticated.set(true);
       })
     );
+  }
+
+  /**
+   * Handle successful authentication (common logic for regular and Google login)
+   */
+  private handleAuthSuccess(response: LoginResponse): void {
+    // Store tokens
+    this.setAccessToken(response.access);
+    this.setRefreshToken(response.refresh);
+
+    // Set current user (excluding tokens)
+    const user: User = {
+      id: response.id,
+      email: response.email,
+      first_name: response.first_name,
+      last_name: response.last_name,
+      is_active: response.is_active,
+      avatar: response.avatar,
+      created_at: response.created_at,
+      updated_at: response.updated_at,
+      email_verified: response.email_verified,
+      phone: response.phone,
+      has_company: response.has_company,
+      platform_role: response.platform_role,
+      country: response.country,
+      subscription: response.subscription,
+      is_skip_twilio_credentials: response.is_skip_twilio_credentials,
+      is_skip_invite_members: response.is_skip_invite_members,
+    };
+    this.currentUser.set(user);
+    this.isAuthenticated.set(true);
   }
 
   /**
@@ -84,7 +160,7 @@ export class Auth {
     this.isAuthenticated.set(false);
 
     if (navigate) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
     }
   }
 

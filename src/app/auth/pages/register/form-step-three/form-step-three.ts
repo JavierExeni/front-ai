@@ -1,10 +1,6 @@
-import { Component, output, signal } from '@angular/core';
-
-interface Industry {
-  id: string;
-  name: string;
-  icon: string;
-}
+import { Component, output, signal, inject, OnInit } from '@angular/core';
+import { RegistrationStateService } from '../../../../core/services/registration-state';
+import { IndustriesApiService, IIndustry } from '../../../../core/services/industries-api';
 
 @Component({
   selector: 'form-step-three',
@@ -12,21 +8,45 @@ interface Industry {
   templateUrl: './form-step-three.html',
   styles: ``,
 })
-export class FormStepThree {
+export class FormStepThree implements OnInit {
   activateStep = output<number>();
-  selectedIndustry = signal<string | null>(null);
+  private readonly registrationState = inject(RegistrationStateService);
+  private readonly industriesApiService = inject(IndustriesApiService);
 
-  industries: Industry[] = [
-    { id: 'marketing', name: 'Advertising & Marketing', icon: 'fa-solid fa-bullhorn' },
-    { id: 'movers', name: 'Logistic & Moving', icon: 'fa-solid fa-dolly' },
-    { id: 'plumbers', name: 'Plumbing Services', icon: 'fa-solid fa-wrench' },
-    { id: 'hvac', name: 'HVAC Services', icon: 'fa-solid fa-fan' },
-    { id: 'electricians', name: 'Electrical Services', icon: 'fa-solid fa-plug-circle-bolt' },
-    { id: 'roofers', name: 'Roofing Services', icon: 'fa-solid fa-helmet-safety' },
-    { id: 'others', name: 'Other', icon: 'fa-solid fa-arrows-rotate' },
-  ];
+  selectedIndustry = signal<number | null>(null);
+  industries = signal<IIndustry[]>([]);
+  isLoadingIndustries = signal<boolean>(true);
 
-  selectIndustry(industryId: string): void {
+  ngOnInit(): void {
+    // Load industries from backend
+    this.isLoadingIndustries.set(true);
+    this.industriesApiService.fetchIndustries().subscribe({
+      next: (industries) => {
+        this.industries.set(industries);
+        this.isLoadingIndustries.set(false);
+
+        // Load existing state if user is navigating back
+        const existingIndustry = this.registrationState.selectedIndustry();
+        if (existingIndustry) {
+          this.selectedIndustry.set(existingIndustry);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading industries:', error);
+        this.isLoadingIndustries.set(false);
+      }
+    });
+  }
+
+  selectIndustry(industryId: number): void {
     this.selectedIndustry.set(industryId);
+    // Save to global state immediately
+    this.registrationState.setSelectedIndustry(industryId);
+  }
+
+  onContinue(): void {
+    if (this.selectedIndustry()) {
+      this.activateStep.emit(4);
+    }
   }
 }

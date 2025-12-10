@@ -1,3 +1,18 @@
+export interface ICountry {
+  id: number;
+  name: string;
+  code: string;
+  dial_code?: string;
+}
+
+export interface IUserSubscription {
+  id: number;
+  plan: string;
+  status: string;
+  start_date: string;
+  end_date: string;
+}
+
 export interface User {
   id: number;
   email: string;
@@ -11,7 +26,10 @@ export interface User {
   phone: string | null;
   has_company: boolean;
   platform_role: string;
-  country: string | null;
+  country: ICountry | null;
+  subscription?: IUserSubscription[];
+  is_skip_twilio_credentials?: boolean;
+  is_skip_invite_members?: boolean;
 }
 
 export interface LoginResponse extends User {
@@ -27,4 +45,11 @@ export interface LoginCredentials {
 export interface TokenResponse {
   access: string;
   refresh: string;
+}
+
+/**
+ * Request payload for Google authentication
+ */
+export interface GoogleAuthRequest {
+  access_token: string;
 }

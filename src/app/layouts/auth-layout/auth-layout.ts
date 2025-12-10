@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { ThemeService } from '../../core/services/theme';
+import { ThemeService } from '../../shared/services/theme';
 
 @Component({
   selector: 'app-auth-layout',

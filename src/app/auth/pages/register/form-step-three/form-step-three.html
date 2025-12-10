@@ -10,10 +10,9 @@
       </div>
 
       <div class="grid grid-cols-3 gap-4">
-        @for (industry of industries; track industry.id) {
+        @for (industry of industries(); track industry.id) {
         <button type="button" (click)="selectIndustry(industry.id)"
-          class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-base-content/8 transition-all duration-200 hover:border-primary/50"
-          [class.border-dashed]="industry.id === 'others'" [class.border-base-content/20]="industry.id === 'others'"
+          class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 transition-all duration-200 hover:border-primary/50"
           [class.border-base-300]="selectedIndustry() !== industry.id"
           [class.bg-base-100]="selectedIndustry() !== industry.id"
           [class.border-primary]="selectedIndustry() === industry.id"

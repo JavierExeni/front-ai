@@ -1,7 +1,8 @@
-import { Component, signal, inject, ChangeDetectionStrategy, output } from '@angular/core';
+import { Component, signal, inject, ChangeDetectionStrategy, output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
+import { RegistrationStateService } from '../../../../core/services/registration-state';
 
 interface CompanySize {
   label: string;
@@ -15,9 +16,10 @@ interface CompanySize {
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormStepTwo {
+export class FormStepTwo implements OnInit {
   activateStep = output<number>();
   private readonly fb = inject(FormBuilder);
+  private readonly registrationState = inject(RegistrationStateService);
 
   readonly companySizes = signal<CompanySize[]>([
     { label: '1-10 employees', value: '1-10' },
@@ -35,10 +37,33 @@ export class FormStepTwo {
     companySize: [null, [Validators.required]],
   });
 
+  ngOnInit(): void {
+    // Load existing state if user is navigating back
+    const existingData = this.registrationState.companyData();
+    if (existingData.name) {
+      this.companyInfoForm.patchValue({
+        companyName: existingData.name || '',
+        website: existingData.website || '',
+        headquarters: existingData.headquarters || '',
+        companySize: existingData.size ? this.companySizes().find(s => s.value === existingData.size) : null,
+      });
+    }
+  }
+
   onSubmit(): void {
     if (this.companyInfoForm.valid) {
-      console.log('Form submitted:', this.companyInfoForm.value);
-      this.activateStep.emit(3)
+      const formValue = this.companyInfoForm.value;
+
+      // Save to global state
+      this.registrationState.setCompanyData({
+        name: formValue.companyName,
+        website: formValue.website,
+        headquarters: formValue.headquarters,
+        size: formValue.companySize.value,
+        industry_pack_id: null, // Will be set in step 3
+      });
+
+      this.activateStep.emit(3);
     } else {
       this.companyInfoForm.markAllAsTouched();
     }

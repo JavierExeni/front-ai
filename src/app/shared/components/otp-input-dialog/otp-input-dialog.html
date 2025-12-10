@@ -1,0 +1,54 @@
+<p-dialog
+  [visible]="visible()"
+  (visibleChange)="onHide()"
+  [modal]="true"
+  [closable]="!isVerifying()"
+  [closeOnEscape]="!isVerifying()"
+  [dismissableMask]="false"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="max-w-md"
+>
+  <ng-template #header>
+    <div class="flex flex-col gap-1">
+      <h3 class="text-xl font-semibold text-base-content">Verify Phone Number</h3>
+      <p class="text-sm text-base-content/70">
+        Enter the 6-digit code sent to {{ email() }}
+      </p>
+    </div>
+  </ng-template>
+
+  <div class="py-6">
+    <div class="flex flex-col items-center gap-6">
+      <!-- OTP Input -->
+      <p-inputotp
+        [length]="6"
+        [ngModel]="otpValue()"
+        (ngModelChange)="onOtpChange($event)"
+        [disabled]="isVerifying()"
+        [integerOnly]="true"
+      />
+
+      @if (isVerifying()) {
+        <div class="flex items-center gap-2 text-base-content/70">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span class="text-sm">Verifying code...</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <div class="flex justify-end">
+      <button
+        pButton
+        type="button"
+        label="Cancel"
+        (click)="onHide()"
+        [disabled]="isVerifying()"
+        severity="secondary"
+        outlined
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>

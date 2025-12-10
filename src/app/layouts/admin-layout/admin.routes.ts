@@ -15,6 +15,10 @@ export const adminRoutes: Routes = [
         path: 'contacts',
         loadComponent: () => import('../../features/contacts/contacts')
       },
+      {
+        path: 'profile',
+        loadComponent: () => import('../../features/profile-account/profile-account')
+      },
        {
         path: '**',
         redirectTo: 'dashboard',

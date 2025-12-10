@@ -1,0 +1,161 @@
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="space-y-2">
+      <h1 class="text-2xl font-bold text-base-content">Settings</h1>
+      <p class="text-base-content/70"> Summary of all workflow automations done by HQDM AI Agents.</p>
+    </div>
+
+    <!-- Tabs -->
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Account</p-tab>
+        <p-tab value="1">Company</p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <!-- Account Tab -->
+        <p-tabpanel value="0" header="Account">
+          <div class="p-4">
+            @if (isLoadingUser()) {
+            <div class="text-center py-8">
+              <p class="text-base-content/70">Loading user information...</p>
+            </div>
+            } @else if (currentUser()) {
+            <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-6">
+              <!-- First Name -->
+              <div>
+                <label for="first_name" class="block text-sm font-medium text-base-content mb-2">
+                  First Name
+                </label>
+                <input pSize="small" pInputText id="first_name" formControlName="first_name" class="w-full"
+                  [class.border-error]="userForm.get('first_name')?.invalid && userForm.get('first_name')?.touched" />
+                @if (userForm.get('first_name')?.invalid && userForm.get('first_name')?.touched) {
+                <small class="text-error">First name is required</small>
+                }
+              </div>
+
+              <!-- Last Name -->
+              <div>
+                <label for="last_name" class="block text-sm font-medium text-base-content mb-2">
+                  Last Name
+                </label>
+                <input pSize="small" pInputText id="last_name" formControlName="last_name" class="w-full"
+                  [class.border-error]="userForm.get('last_name')?.invalid && userForm.get('last_name')?.touched" />
+                @if (userForm.get('last_name')?.invalid && userForm.get('last_name')?.touched) {
+                <small class="text-error">Last name is required</small>
+                }
+              </div>
+
+              <!-- Country -->
+              <div>
+                <label for="country" class="block text-sm font-medium text-base-content mb-2">
+                  Country
+                </label>
+                <p-select
+                  id="country"
+                  [options]="countries()"
+                  formControlName="country"
+                  appendTo="body"
+                  optionLabel="name"
+                  [filter]="true"
+                  filterBy="name"
+                  placeholder="Select country..."
+                  size="small"
+                  class="w-full"
+                >
+                  <!-- Selected item template -->
+                  <ng-template #selectedItem let-country>
+                    @if (country) {
+                    <div class="flex items-center gap-3 w-full">
+                      <img
+                        [src]="getFlagUrl(country.code)"
+                        [alt]="country.name"
+                        class="w-5 h-4 object-cover rounded"
+                      />
+                      <span>{{ country.name }}</span>
+                    </div>
+                    }
+                  </ng-template>
+
+                  <!-- Dropdown item template -->
+                  <ng-template #item let-country>
+                    <div class="flex items-center gap-3 w-full">
+                      <img
+                        [src]="getFlagUrl(country.code)"
+                        [alt]="country.name"
+                        class="w-5 h-4 object-cover rounded"
+                      />
+                      <span>{{ country.name }}</span>
+                    </div>
+                  </ng-template>
+                </p-select>
+              </div>
+
+              <!-- Phone Number -->
+              <div>
+                <label for="phoneNumber" class="block text-sm font-medium text-base-content mb-2">
+                  Phone Number
+                </label>
+                <app-phone-input formControlName="phone" placeholder="Enter phone number" />
+                @if (phoneChanged()) {
+                <small class="text-info">Changing your phone number will require verification</small>
+                }
+              </div>
+
+              <!-- Submit Button -->
+              <div class="flex justify-end">
+                <button size="small" pButton type="submit" label="Save Changes" [loading]="isLoading()"
+                  [disabled]="userForm.invalid || isLoading()" class="btn btn-primary"></button>
+              </div>
+            </form>
+
+            <!-- Delete Account Section -->
+            <div class="mt-8 pt-6 border-t border-base-300">
+              <h2 class="text-xl font-semibold text-base-content mb-2">Delete Account</h2>
+              <p class="text-base-content/70 mb-4">
+                Delete your account and all associated data. This action is irreversible. The account
+                will be deleted from the database and all associated data will be lost.
+              </p>
+
+              @if (!showDeleteConfirm()) {
+              <button pButton size="small" type="button" label="Delete Account" (click)="toggleDeleteConfirm()" severity="danger"
+                class="btn btn-error"></button>
+              } @else {
+              <div class="bg-error/10 border border-error rounded-lg p-4">
+                <p class="text-error font-medium mb-4">
+                  Are you sure you want to delete your account? This action cannot be undone.
+                </p>
+                <div class="flex gap-2">
+                  <button pButton type="button" label="Confirm Delete" (click)="deleteAccount()"
+                    [loading]="isDeleting()" [disabled]="isDeleting()" severity="danger" class="btn btn-error"></button>
+                  <button pButton type="button" label="Cancel" (click)="toggleDeleteConfirm()" [disabled]="isDeleting()"
+                    severity="secondary" outlined="true" class="btn btn-ghost"></button>
+                </div>
+              </div>
+              }
+            </div>
+            } @else {
+            <div class="text-center py-8">
+              <p class="text-error">Failed to load user data. Please try refreshing the page.</p>
+            </div>
+            }
+          </div>
+        </p-tabpanel>
+
+        <!-- Company Tab -->
+        <p-tabpanel value="1" header="Company">
+          <div class="bg-base-100 rounded-lg p-6">
+            <p class="text-base-content/70">Company settings will be implemented here.</p>
+          </div>
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
+    <!-- OTP Verification Dialog -->
+    <app-otp-input-dialog
+      [visible]="showOtpDialog()"
+      [email]="currentUser()?.email || ''"
+      [isVerifying]="isVerifyingOtp()"
+      (visibleChange)="onOtpDialogHide()"
+      (otpComplete)="onOtpComplete($event)"
+    />
+</div>

@@ -12,6 +12,61 @@
     <!-- Form -->
     <form [formGroup]="personalInfoForm" (ngSubmit)="onSubmit()" class="h-full flex flex-col justify-between">
       <div class="flex flex-col gap-6">
+        <!-- Email (only for non-Google users) -->
+        @if (!isGoogleUser()) {
+        <div class="relative flex flex-col gap-2">
+          <label for="email" class="text-sm font-medium">Email</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            pSize="small"
+            class="w-full"
+            placeholder="your@email.com"
+          />
+          @if (personalInfoForm.get('email')?.invalid && personalInfoForm.get('email')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Please enter a valid email address.</small>
+          }
+        </div>
+        }
+
+        <!-- Email (read-only for Google users) -->
+        @if (isGoogleUser()) {
+        <div class="relative flex flex-col gap-2">
+          <label for="emailReadonly" class="text-sm font-medium">Email</label>
+          <input
+            pInputText
+            id="emailReadonly"
+            type="email"
+            formControlName="email"
+            pSize="small"
+            class="w-full"
+            readonly
+          />
+          <small class="text-xs text-base-content/60">Email from your Google account</small>
+        </div>
+        }
+
+        <!-- Password (only for non-Google users) -->
+        @if (!isGoogleUser()) {
+        <div class="relative flex flex-col gap-2">
+          <label for="password" class="text-sm font-medium">Password</label>
+          <p-password
+            id="password"
+            formControlName="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            placeholder="Enter password"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+          />
+          @if (personalInfoForm.get('password')?.invalid && personalInfoForm.get('password')?.touched) {
+          <small class="absolute -bottom-5 left-1 text-red-500">Password must be at least 6 characters.</small>
+          }
+        </div>
+        }
+
         <!-- First Name -->
         <div class="relative flex flex-col gap-2">
           <label for="firstName" class="text-sm font-medium">First Name</label>
@@ -58,7 +113,7 @@
               @if (country) {
               <div class="flex items-center gap-3 w-full">
                 <img
-                  [src]="country.flagUrl"
+                  [src]="getFlagUrl(country.code)"
                   [alt]="country.name"
                   class="w-5 h-4 object-cover rounded"
                 />
@@ -71,7 +126,7 @@
             <ng-template #item let-country>
               <div class="flex items-center gap-3 w-full">
                 <img
-                  [src]="country.flagUrl"
+                  [src]="getFlagUrl(country.code)"
                   [alt]="country.name"
                   class="w-5 h-4 object-cover rounded"
                 />

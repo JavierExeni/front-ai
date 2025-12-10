@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'auth',
     loadChildren: () => import('./layouts/auth-layout/auth.routes'),
   },
   {
@@ -11,7 +11,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '',
+    redirectTo: 'auth',
     pathMatch: 'full',
   },
   {
