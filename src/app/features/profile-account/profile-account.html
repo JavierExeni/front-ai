@@ -143,19 +143,19 @@
 
         <!-- Company Tab -->
         <p-tabpanel value="1" header="Company">
-          <div class="bg-base-100 rounded-lg p-6">
-            <p class="text-base-content/70">Company settings will be implemented here.</p>
-          </div>
+          <app-company-settings />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
 
     <!-- OTP Verification Dialog -->
-    <app-otp-input-dialog
-      [visible]="showOtpDialog()"
-      [email]="currentUser()?.email || ''"
-      [isVerifying]="isVerifyingOtp()"
-      (visibleChange)="onOtpDialogHide()"
-      (otpComplete)="onOtpComplete($event)"
-    />
+     @if(currentUser()){
+       <app-otp-input-dialog
+         [visible]="showOtpDialog()"
+         [email]="currentUser().email || ''"
+         [isVerifying]="isVerifyingOtp()"
+         (visibleChange)="onOtpDialogHide()"
+         (otpComplete)="onOtpComplete($event)"
+       />
+     }
 </div>

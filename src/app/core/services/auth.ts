@@ -1,8 +1,14 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { LoginCredentials, LoginResponse, TokenResponse, User, GoogleAuthRequest } from '../models/user';
+import {
+  LoginCredentials,
+  LoginResponse,
+  TokenResponse,
+  User,
+  GoogleAuthRequest,
+} from '../models/user';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
@@ -17,10 +23,15 @@ export class Auth {
   private readonly USERS_API_URL = `${environment.apiUrl}/users`;
   private readonly TOKEN_KEY = 'access_token';
   private readonly REFRESH_TOKEN_KEY = 'refresh_token';
+  private readonly AUTH_RESPONSE = 'auth_response';
 
   // Signal to hold the current authenticated user
-  currentUser = signal<User | null>(null);
+  user = signal<User | null>(null);
   isAuthenticated = signal<boolean>(false);
+
+  currentUser = computed(() =>{
+    return this.user() ?? this.getAuthResponse();
+  });
 
   constructor() {
     // Initialize user from stored tokens on service creation
@@ -40,11 +51,11 @@ export class Auth {
           console.error('Failed to load user on startup:', error);
           // If token is invalid or expired, logout
           this.logout(false);
-        }
+        },
       });
     } else {
       // Ensure state is clean if no token
-      this.currentUser.set(null);
+      this.user.set(null);
       this.isAuthenticated.set(false);
     }
   }
@@ -66,7 +77,7 @@ export class Auth {
    */
   loginWithGoogle(idToken: string): Observable<LoginResponse> {
     const payload: GoogleAuthRequest = {
-      access_token: idToken
+      access_token: idToken,
     };
 
     return this.http.post<LoginResponse>(`${this.GOOGLE_AUTH_URL}/`, payload).pipe(
@@ -112,8 +123,6 @@ export class Auth {
 
     return this.http.get<User>(`${this.USERS_API_URL}/${userId}/`).pipe(
       tap((user) => {
-        console.log(user)
-        this.currentUser.set(user);
         this.isAuthenticated.set(true);
       })
     );
@@ -126,6 +135,7 @@ export class Auth {
     // Store tokens
     this.setAccessToken(response.access);
     this.setRefreshToken(response.refresh);
+    this.setAuthResponse(response);
 
     // Set current user (excluding tokens)
     const user: User = {
@@ -142,11 +152,13 @@ export class Auth {
       has_company: response.has_company,
       platform_role: response.platform_role,
       country: response.country,
+      company_id: response.company_id,
       subscription: response.subscription,
       is_skip_twilio_credentials: response.is_skip_twilio_credentials,
       is_skip_invite_members: response.is_skip_invite_members,
     };
-    this.currentUser.set(user);
+    this.setAuthResponse(user);
+    this.user.set(user);
     this.isAuthenticated.set(true);
   }
 
@@ -154,9 +166,8 @@ export class Auth {
    * Logout user and clear stored data
    */
   logout(navigate: boolean = true): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    this.currentUser.set(null);
+    this.clearTokens();
+    this.user.set(null);
     this.isAuthenticated.set(false);
 
     if (navigate) {
@@ -170,6 +181,7 @@ export class Auth {
   clearTokens(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(this.AUTH_RESPONSE);
   }
 
   /**
@@ -177,14 +189,16 @@ export class Auth {
    */
   refreshToken(): Observable<TokenResponse> {
     const refreshToken = this.getRefreshToken();
-    return this.http.post<TokenResponse>(`${this.API_URL}/refresh/`, { refresh: refreshToken }).pipe(
-      tap((response) => {
-        this.setAccessToken(response.access);
-        if (response.refresh) {
-          this.setRefreshToken(response.refresh);
-        }
-      })
-    );
+    return this.http
+      .post<TokenResponse>(`${this.API_URL}/refresh/`, { refresh: refreshToken })
+      .pipe(
+        tap((response) => {
+          this.setAccessToken(response.access);
+          if (response.refresh) {
+            this.setRefreshToken(response.refresh);
+          }
+        })
+      );
   }
 
   /**
@@ -202,6 +216,13 @@ export class Auth {
   }
 
   /**
+   * Get auth response from storage
+   */
+  getAuthResponse(): User {
+    return JSON.parse(localStorage.getItem(this.AUTH_RESPONSE)!);
+  }
+
+  /**
    * Set access token in storage
    */
   private setAccessToken(token: string): void {
@@ -213,6 +234,13 @@ export class Auth {
    */
   private setRefreshToken(token: string): void {
     localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+  }
+
+  /**
+   * Set auth response in storage
+   */
+  private setAuthResponse(response: User): void {
+    localStorage.setItem(this.AUTH_RESPONSE, JSON.stringify(response));
   }
 
   /**

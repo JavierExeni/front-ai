@@ -31,7 +31,7 @@ export const menuOptions: MenuOption[] = [
       {
         icon: 'fa-solid fa-phone-volume',
         name: 'Outbound',
-        route: 'outbound',
+        route: 'outbound/list',
       },
       {
         icon: 'fa-solid fa-chart-simple',

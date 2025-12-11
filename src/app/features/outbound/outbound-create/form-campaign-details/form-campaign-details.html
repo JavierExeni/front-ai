@@ -1,0 +1,21 @@
+<div class="card card-border border-base-300 grid grid-cols-2  bg-base-200 p-4">
+  <form>
+    <h1>Campaign Details</h1>
+    <p>Provide basic information about your outbound campaign.</p>
+    <div>
+      <div class="relative flex flex-col gap-2">
+        <label for="campaignName" class="text-sm font-medium">Campaign Name</label>
+        <input pInputText id="campaignName" type="text" formControlName="campaign_name" pSize="small" class="w-full"
+          readonly />
+      </div>
+      <div class="relative flex flex-col gap-2">
+        <label for="campaignName" class="text-sm font-medium">Campaign Description</label>
+        <textarea rows="5" cols="30" pTextarea fluid></textarea>
+      </div>
+      <div class="flex flex-auto flex-col gap-2">
+        <label for="campaignName" class="text-sm font-medium">Campaign Description</label>
+        <p-datepicker inputStyleClass="w-full" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+      </div>
+    </div>
+  </form>
+</div>

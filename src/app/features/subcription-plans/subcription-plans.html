@@ -1,0 +1,145 @@
+<section>
+  <div class="py-4">
+    <!-- Header Section -->
+    <div class="mx-auto max-w-5xl text-center mb-8">
+      <div class="mb-6">
+        <h1 class="text-4xl font-bold tracking-tight">
+          <span class="text-white">HQ</span><span class="text-purple-500">DM</span>
+        </h1>
+      </div>
+      <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-bold text-white">
+        Simple, Transparent Pricing
+      </h2>
+      <p class="text-lg text-gray-300">
+        HQDM automates your outbound and inbound communication with AI-powered agents for calls, emails, and SMS.
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (error()) {
+      <div class="max-w-2xl mx-auto bg-red-900/20 border border-red-500 text-red-200 px-6 py-4 rounded-lg text-center">
+        <p>{{ error() }}</p>
+        <button
+          (click)="loadPlans()"
+          class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    }
+
+    <!-- Subscription Error -->
+    @if (subscribeError()) {
+      <div class="max-w-2xl mx-auto mb-6 bg-red-900/20 border border-red-500 text-red-200 px-6 py-4 rounded-lg text-center">
+        <p>{{ subscribeError() }}</p>
+        <button
+          (click)="subscribeError.set(null)"
+          class="mt-2 text-sm text-red-300 hover:text-red-100 underline"
+        >
+          Dismiss
+        </button>
+      </div>
+    }
+
+    <!-- Pricing Cards -->
+    @if (!isLoading() && !error() && plans().length > 0) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        @for (plan of plans(); track plan.id) {
+          <div class="transition-transform duration-300 ease-in-out hover:scale-105">
+            <div
+              class="flex flex-col rounded-2xl"
+              [class]="plan.name === 'Starter' ? 'bg-linear-to-br from-gray-800 to-gray-900 border-2 border-gray-700' :
+                       plan.name === 'Growth' ? 'bg-linear-to-br from-blue-900 to-blue-950 border-2 border-blue-700' :
+                       'bg-linear-to-br from-purple-900 to-purple-950 border-2 border-purple-700'"
+            >
+              <div class="p-8 flex flex-col grow">
+                <!-- Plan Name -->
+                <h3 class="text-2xl font-bold text-white mb-6">{{ plan.name }}</h3>
+
+                <!-- Price -->
+                <div class="mb-6">
+                  <div class="flex items-baseline">
+                    <span class="text-5xl font-extrabold text-white">${{ plan.price.split('.')[0] }}</span>
+                    <span class="text-xl text-gray-300 ml-2">/month</span>
+                  </div>
+                </div>
+
+                <!-- Credits -->
+                <div class="mb-4">
+                  <div class="text-4xl font-bold text-white mb-2">
+                    {{ plan.credits.toLocaleString() }}
+                  </div>
+                  <div class="text-sm font-medium text-gray-300">Credits per month</div>
+                </div>
+
+                <!-- Overage -->
+                <div class="mb-8 pb-8 border-b border-gray-700">
+                  <div class="text-sm text-gray-400">
+                    Overage: <span class="font-semibold text-gray-300">${{ plan.overage_credit_cost }} per credit</span>
+                  </div>
+                </div>
+
+                <!-- Features List -->
+                <ul class="space-y-4 mb-8 grow">
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-400 mr-3 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-gray-200">AI Voice Agents</span>
+                  </li>
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-400 mr-3 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-gray-200">Email Automation</span>
+                  </li>
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-400 mr-3 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-gray-200">SMS Campaigns</span>
+                  </li>
+                  <li class="flex items-start">
+                    <svg class="w-5 h-5 text-green-400 mr-3 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-gray-200">Analytics Dashboard</span>
+                  </li>
+                </ul>
+
+                <!-- CTA Button -->
+                <button
+                  (click)="selectPlan(plan)"
+                  [disabled]="isPlanSubscribing(plan.id)"
+                  class="w-full py-3 px-6 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  [class.transform]="!isPlanSubscribing(plan.id)"
+                  [class.hover:scale-105]="!isPlanSubscribing(plan.id)"
+                  [class]="plan.name === 'Growth'
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white focus:ring-purple-500'"
+                >
+                  @if (isPlanSubscribing(plan.id)) {
+                    <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Processing...</span>
+                  } @else {
+                    <span>Get Started</span>
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

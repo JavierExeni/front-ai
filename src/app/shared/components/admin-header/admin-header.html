@@ -5,30 +5,27 @@
       <div class="flex gap-3 items-center" tabindex="0">
         @if(currentUser()){
         <p class="flex flex-col text-right">
-          <span class="text-sm font-semibold text-base-content">{{ currentUser()?.first_name }} {{
-            currentUser()?.last_name }}</span>
-          <span class="text-xs text-base-content/60">{{currentUser()?.email}}</span>
+          <span class="text-sm font-semibold text-base-content">{{ currentUser().first_name }} {{
+            currentUser().last_name }}</span>
+          <span class="text-xs text-base-content/60">{{currentUser().email}}</span>
         </p>
+        <p-avatar [label]="currentUser()!.first_name[0] || 'H'" class="mr-2" size="normal"
+          [style]="{ 'background-color': '#ece9fc', color: '#2a1261' }" shape="circle" />
         }
-        <div role="button"
-          class="btn btn-ghost btn-circle avatar ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
-          <div class="w-10 rounded-full">
-            <img alt="User profile" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-          </div>
-        </div>
       </div>
 
       <!-- content dropdown -->
       <ul tabindex="-1"
         class="menu menu-sm dropdown-content bg-base-200 rounded-sm z-1 mt-3 w-52 p-2 shadow-lg border border-base-300">
         <li>
-          <a [routerLink]="['/company/profile']" class="justify-between hover:bg-base-200 hover:text-primary transition-colors">
+          <a [routerLink]="['/company/profile']"
+            class="justify-between hover:bg-base-200 hover:text-primary transition-colors">
             Profile
             <span class="badge badge-primary badge-sm">New</span>
           </a>
         </li>
-        <li><a class="hover:bg-base-200 hover:text-primary transition-colors">Settings</a></li>
-        <li><a class="hover:bg-base-200 hover:text-primary transition-colors">Subscription</a></li>
+        <li><a [routerLink]="['/company/settings']" class="hover:bg-base-200 hover:text-primary transition-colors">Settings</a></li>
+        <li><a [routerLink]="['/company/subscription-plans']" class="hover:bg-base-200 hover:text-primary transition-colors">Subscription</a></li>
 
         <li class="border-t border-base-300 mt-1 pt-1">
           <a (click)="logout()"

@@ -26,6 +26,7 @@ export interface User {
   phone: string | null;
   has_company: boolean;
   platform_role: string;
+  company_id: number | null;
   country: ICountry | null;
   subscription?: IUserSubscription[];
   is_skip_twilio_credentials?: boolean;

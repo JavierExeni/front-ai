@@ -11,6 +11,7 @@ import { CountriesApiService } from '../../core/services/countries-api';
 import { OtpApiService } from '../../core/services/otp-api';
 import { PhoneInputComponent } from '../../shared/components/phone-input/phone-input';
 import { OtpInputDialogComponent } from '../../shared/components/otp-input-dialog/otp-input-dialog';
+import { CompanySettingsComponent } from './company-settings/company-settings';
 
 @Component({
   selector: 'app-profile-account',
@@ -21,7 +22,8 @@ import { OtpInputDialogComponent } from '../../shared/components/otp-input-dialo
     ButtonModule,
     SelectModule,
     PhoneInputComponent,
-    OtpInputDialogComponent
+    OtpInputDialogComponent,
+    CompanySettingsComponent
   ],
   templateUrl: './profile-account.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -187,7 +189,6 @@ export default class ProfileAccount implements OnInit {
       next: (updatedUser) => {
         this.isVerifyingOtp.set(false);
         this.showOtpDialog.set(false);
-        this.auth.currentUser.set(updatedUser);
         this.initialPhone = updatedUser.phone || '';
         this.pendingUpdateData = null;
         // Force form update to reflect new phone as initial value
@@ -218,7 +219,6 @@ export default class ProfileAccount implements OnInit {
     this.userApiService.updateUser(user.id, payload).subscribe({
       next: (updatedUser) => {
         this.isLoading.set(false);
-        this.auth.currentUser.set(updatedUser);
         this.initialPhone = updatedUser.phone || '';
         // Force form update to reflect new phone as initial value
         this.userForm.patchValue({ phone: updatedUser.phone || '' }, { emitEvent: false });
