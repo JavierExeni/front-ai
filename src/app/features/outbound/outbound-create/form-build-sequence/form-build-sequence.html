@@ -1,0 +1,123 @@
+<div class="flex justify-center items-start">
+  <div class="w-full max-w-3xl">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Build Your Sequence</h2>
+      <p class="text-surface-400 text-sm">Create a series of touchpoints to engage your prospects.</p>
+    </div>
+
+    <div class="flex justify-center mb-6">
+      <p-button label="Add step to sequence" icon="pi pi-plus" (onClick)="addSequence()" severity="secondary"
+        size="small" />
+    </div>
+
+    <form [formGroup]="sequencesForm" class="space-y-6">
+      <div formArrayName="sequences">
+        @for (sequence of sequences.controls; track $index) {
+        <div [formGroupName]="$index" class="bg-surface-900 rounded-lg p-6 space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Action Type -->
+            <div class="flex flex-col gap-2">
+              <label [for]="'actionType' + $index" class="text-sm font-medium text-surface-200">Action</label>
+              <p-select [inputId]="'actionType' + $index" formControlName="actionType" [options]="actionOptions"
+                optionLabel="label" optionValue="value" placeholder="Select a type" class="w-full" size="small" />
+            </div>
+
+            <!-- Delay -->
+            <div class="flex flex-col gap-2">
+              <label [for]="'delay' + $index" class="text-sm font-medium text-surface-200">Delay</label>
+              @if ($index === 0) {
+              <p-select [inputId]="'delay' + $index" formControlName="delay" [options]="getDelayOptions($index)"
+                optionLabel="label" optionValue="value" [disabled]="true" class="w-full" size="small" />
+              } @else {
+              <p-select [inputId]="'delay' + $index" formControlName="delay" [options]="getDelayOptions($index)"
+                optionLabel="label" optionValue="value" placeholder="Select delay" class="w-full" size="small" />
+              }
+            </div>
+          </div>
+
+          <!-- Select Agent -->
+          <div class="flex flex-col gap-2">
+            <label [for]="'agent' + $index" class="text-sm font-medium text-surface-200">
+              @if (sequence.get('actionType')?.value === 'voice') {
+              Select Voice Agent
+              } @else if (sequence.get('actionType')?.value === 'email') {
+              Select Email Agent
+              } @else if (sequence.get('actionType')?.value === 'sms') {
+              Select Text Agent
+              } @else {
+              Select Agent
+              }
+            </label>
+            <div class="flex gap-2">
+              <p-select [inputId]="'agent' + $index" formControlName="agentId" [options]="campaignAgents()"
+                optionLabel="name" optionValue="id" placeholder="No agents available" class="flex-1" size="small"
+                [disabled]="!sequence.get('actionType')?.value || campaignAgents().length === 0" />
+              <p-button label="Create Agent" size="small" severity="secondary"
+                (onClick)="openCreateAgentDialog(sequence.get('actionType')?.value)"
+                [disabled]="!sequence.get('actionType')?.value" />
+            </div>
+          </div>
+
+          <!-- Interaction -->
+          <div class="flex flex-col gap-2">
+            <label [for]="'interaction' + $index" class="text-sm font-medium text-surface-200">Interaction</label>
+            @if ($index === 0) {
+            <p-select [inputId]="'interaction' + $index" formControlName="interaction"
+              [options]="getInteractionOptions(sequence.get('actionType')?.value)" optionLabel="label"
+              optionValue="value" [placeholder]="getInteractionLabel(sequence.get('actionType')?.value)"
+              class="w-full" size="small" [disabled]="true" />
+            } @else {
+            <p-select [inputId]="'interaction' + $index" formControlName="interaction"
+              [options]="getInteractionOptions(sequence.get('actionType')?.value)" optionLabel="label"
+              optionValue="value" placeholder="Select interaction" class="w-full" size="small"
+              [disabled]="isInteractionDisabled(sequence.get('actionType')?.value, $index)" />
+            }
+          </div>
+
+          <!-- Interaction Prompt -->
+          <div class="flex flex-col gap-2">
+            <label [for]="'prompt' + $index" class="text-sm font-medium text-surface-200">Interaction Prompt</label>
+            <p-select [inputId]="'prompt' + $index" formControlName="promptId" [options]="getPromptsWithCustom()"
+              optionLabel="label" optionValue="value" placeholder="Select prompt" class="w-full" size="small"
+              [disabled]="!sequence.get('actionType')?.value" />
+          </div>
+
+          <!-- Custom Prompt Textarea -->
+          @if (sequence.get('promptId')?.value) {
+          <div class="flex flex-col gap-2">
+            <label [for]="'customPrompt' + $index" class="text-sm font-medium text-surface-200">Prompt</label>
+            <textarea [id]="'customPrompt' + $index" rows="6" pTextarea formControlName="customPrompt" class="w-full"
+              size="small" [readonly]="!isCustomPromptSelected($index)"
+              [placeholder]="isCustomPromptSelected($index) ? 'Enter your custom prompt...' : 'Use the following context to create your Agent Prompt...'"></textarea>
+          </div>
+          }
+
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            <p-button label="Save" severity="contrast" size="small" (onClick)="saveSequence($index)" />
+            <p-button label="Delete" severity="danger" size="small" (onClick)="deleteSequence($index)"
+              [disabled]="sequences.length === 1" />
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between pt-4">
+        <p-button label="Back" severity="secondary" (onClick)="onBack()" />
+        <p-button label="Continue" (onClick)="onContinue()" [disabled]="!sequencesForm.valid" />
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Create Agent Dialog -->
+<p-dialog [header]="getAgentDialogHeader()" [modal]="true" [visible]="agentDialogVisible()"
+  (visibleChange)="agentDialogVisible.set($event)" [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [closable]="!isCreatingAgent()">
+  @if (createAgentError()) {
+  <p-message severity="error">{{ createAgentError() }}</p-message>
+  }
+
+  <agent-voice-form (cancel)="onCancelAgentCreate()" (submit)="onSubmitAgentCreate($event)"></agent-voice-form>
+</p-dialog>

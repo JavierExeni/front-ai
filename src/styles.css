@@ -2,6 +2,7 @@
 
 @import 'tailwindcss';
 @plugin "daisyui";
+@import "primeicons/primeicons.css";
 
 /* Light Theme - Default */
 @plugin "daisyui/theme" {

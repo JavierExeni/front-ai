@@ -1,0 +1,345 @@
+<div class="space-y-4">
+  <!-- Header Section -->
+  <div class="space-y-2">
+    <h1 class="text-2xl font-bold text-base-content">Voice Agent</h1>
+    <p class="text-base-content/70">Create and manage your voice agents to automate calls, qualify leads, and respond in
+      real time.</p>
+  </div>
+
+  <!-- Tabs and Search Section -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <!-- Tabs -->
+    <div role="tablist" class="tabs tabs-bordered">
+      <button role="tab" class="tab" [class.tab-active]="activeTab() === 'agents'" (click)="setActiveTab('agents')">
+        Agents
+      </button>
+      <button role="tab" class="tab" [class.tab-active]="activeTab() === 'prompts'" (click)="setActiveTab('prompts')">
+        Prompts
+      </button>
+    </div>
+
+    <!-- Search and Create Button -->
+    <div class="flex flex-col items-center sm:flex-row gap-3 w-full sm:w-auto">
+      @if (activeTab() === 'agents') {
+        <div class="form-control">
+          <input type="text" placeholder="Search name, title" pInputText
+            (input)="onSearchChange($any($event.target).value)" [value]="searchQuery()" pSize="small" />
+        </div>
+      }
+      <button class="btn btn-sm btn-primary" (click)="activeTab() === 'agents' ? createVoiceAgent() : createPrompt()">
+        {{ activeTab() === 'agents' ? 'Create Voice Agent' : 'Create Voice Prompt' }}
+      </button>
+    </div>
+  </div>
+
+  <p-divider />
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="flex justify-center items-center py-20">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+  <div role="alert" class="alert alert-error">
+    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span>{{ error() }}</span>
+    <button class="btn btn-sm" (click)="loadAgents()">Try Again</button>
+  </div>
+  }
+
+  <!-- Content Area -->
+  @if (!isLoading() && !error()) {
+  <!-- Agents Tab -->
+  @if (activeTab() === 'agents') {
+  <!-- Empty State -->
+  @if (filteredAgents().length === 0 && agents().length === 0) {
+  <div class="flex flex-col items-center justify-center py-20 space-y-4">
+    <div class="bg-base-200 rounded-full p-8">
+      <svg class="w-16 h-16 text-base-content/40" fill="currentColor" viewBox="0 0 24 24">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        <path d="M15.5 12.5l1.5 1.5 3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" fill="none" />
+      </svg>
+    </div>
+    <div class="text-center space-y-2">
+      <h3 class="text-xl font-semibold text-base-content">No Voice Agents found</h3>
+      <p class="text-base-content/60">No voice agents found for this company.</p>
+    </div>
+    <button class="btn btn-primary" (click)="createVoiceAgent()">
+      Create Voice Agent
+    </button>
+  </div>
+  }
+
+  <!-- No Search Results -->
+  @if (filteredAgents().length === 0 && agents().length > 0) {
+  <div class="flex flex-col items-center justify-center py-20 space-y-4">
+    <div class="text-center space-y-2">
+      <h3 class="text-xl font-semibold text-base-content">No results found</h3>
+      <p class="text-base-content/60">Try adjusting your search query.</p>
+    </div>
+  </div>
+  }
+
+  <!-- Agents List -->
+  @if (filteredAgents().length > 0) {
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-5">
+    @for (campaignAgent of filteredAgents(); track campaignAgent.id) {
+    <div class="card bg-base-200 shadow-md hover:shadow-lg transition-shadow relative">
+      <!-- Dropdown Menu -->
+      <div class="absolute top-4 right-4">
+        <div class="dropdown dropdown-end">
+          <button tabindex="0" class="btn btn-ghost btn-xs btn-circle">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+          </button>
+          <ul tabindex="0" class="dropdown-content z-1 menu p-2 shadow bg-base-100 rounded-box w-52">
+            <li><a (click)="editAgent(campaignAgent)">Edit Agent</a></li>
+            <li><a>Duplicate</a></li>
+            <li><a class="text-error" (click)="deleteAgent(campaignAgent)" [class.disabled]="isDeletingAgent()">Delete</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card-body items-center text-center p-6 space-y-4">
+        <!-- Agent Avatar -->
+        <div class="avatar">
+          <div class="w-24 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+            @if (campaignAgent.agent.avatar) {
+            <img [src]="campaignAgent.agent.avatar" [alt]="campaignAgent.agent.name" />
+            } @else {
+            <div
+              class="bg-primary text-primary-content flex items-center justify-center w-full h-full text-3xl font-bold">
+              {{ campaignAgent.agent.name.charAt(0).toUpperCase() }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Agent Name -->
+        <div class="space-y-1">
+          <h3 class="font-bold text-lg text-base-content">{{ campaignAgent.name | titlecase}}</h3>
+          <div class="badge badge-sm badge-ghost capitalize">{{ campaignAgent.agent_title }}</div>
+        </div>
+
+        <!-- Activity Button -->
+        <button class="btn btn-sm btn-outline btn-block" (click)="viewAgentActivity(campaignAgent)">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Activity
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+  }
+
+  <!-- Prompts Tab -->
+  @if (activeTab() === 'prompts') {
+    <!-- Loading State -->
+    @if (isLoadingPrompts()) {
+      <div class="flex justify-center items-center py-20">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (promptsError() && !isLoadingPrompts()) {
+      <div role="alert" class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ promptsError() }}</span>
+        <button class="btn btn-sm" (click)="loadPrompts()">Try Again</button>
+      </div>
+    }
+
+    <!-- Prompts List -->
+    @if (!isLoadingPrompts() && !promptsError()) {
+      @if (prompts().length === 0) {
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center py-20 space-y-4">
+          <div class="bg-base-200 rounded-full p-8">
+            <svg class="w-16 h-16 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div class="text-center space-y-2">
+            <h3 class="text-xl font-semibold text-base-content">No Voice Prompts found</h3>
+            <p class="text-base-content/60">Create your first prompt to get started.</p>
+          </div>
+          <button class="btn btn-primary" (click)="createPrompt()">
+            Create Voice Prompt
+          </button>
+        </div>
+      } @else {
+        <!-- Prompts Grid -->
+        <div class="space-y-4">
+          @for (prompt of prompts(); track prompt.id) {
+            <div class="card bg-base-200 shadow-md hover:shadow-lg transition-shadow">
+              <div class="card-body">
+                <div class="flex justify-between items-start">
+                  <div class="grow">
+                    <h3 class="card-title text-base-content mb-2">{{ prompt.name }}</h3>
+                    <p class="text-base-content/70 text-sm whitespace-pre-wrap">{{ prompt.prompt }}</p>
+                  </div>
+                  <div class="flex gap-2 ml-4">
+                    <button
+                      class="btn btn-sm btn-ghost btn-square"
+                      (click)="editPrompt(prompt)"
+                      title="Edit"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-ghost btn-square text-error"
+                      (click)="deletePrompt(prompt)"
+                      [disabled]="isDeletingPrompt()"
+                      title="Delete"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+  }
+</div>
+
+
+<!-- Create/Edit Voice Agent Dialog -->
+<p-dialog
+  [header]="selectedAgent() ? 'Edit Voice Agent' : 'Create Voice Agent'"
+  [modal]="true"
+  [visible]="agentVoiceFormVisible()"
+  (visibleChange)="agentVoiceFormVisible.set($event)"
+  [style]="{ width: '50rem' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <!-- Error Alert -->
+  @if (createError()) {
+    <div role="alert" class="alert alert-error mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{{ createError() }}</span>
+    </div>
+  }
+
+  <!-- Loading Overlay -->
+  @if (isCreating()) {
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 rounded">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  }
+
+  <agent-voice-form
+    [initialData]="agentFormInitialData()"
+    (cancel)="onCancelCreate()"
+    (submit)="onSubmitCreate($event)"
+  ></agent-voice-form>
+</p-dialog>
+
+<!-- Create/Edit Prompt Dialog -->
+<p-dialog
+  [header]="selectedPrompt() ? 'Edit Prompt' : 'Create Voice Prompt'"
+  [modal]="true"
+  [visible]="promptFormVisible()"
+  (visibleChange)="promptFormVisible.set($event)"
+  [style]="{ width: '40rem' }"
+  [breakpoints]="{ '960px': '75vw', '640px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <!-- Loading Overlay -->
+  @if (isCreating()) {
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 rounded">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+    </div>
+  }
+
+  <form [formGroup]="promptForm" (ngSubmit)="onSubmitPromptForm()">
+    <!-- Prompt Name -->
+    <div class="mb-4">
+      <label for="prompt-name" class="block font-semibold mb-2 text-base-content">Prompt Name</label>
+      <input
+        id="prompt-name"
+        type="text"
+        pInputText
+        formControlName="name"
+        placeholder="Enter prompt name..."
+        pSize="small"
+        class="w-full"
+      />
+      @if (promptFormName?.invalid && promptFormName?.touched) {
+        <small class="block mt-1 text-xs text-error">Prompt name is required (min 2 characters)</small>
+      }
+    </div>
+
+    <!-- Prompt Content -->
+    <div class="mb-4">
+      <label for="prompt-content" class="block font-semibold mb-2 text-base-content">Prompt</label>
+      <textarea
+        id="prompt-content"
+        pInputTextarea
+        formControlName="prompt"
+        placeholder="Enter your prompt here..."
+        rows="8"
+        class="w-full"
+      ></textarea>
+      @if (promptFormPrompt?.invalid && promptFormPrompt?.touched) {
+        <small class="block mt-1 text-xs text-error">Prompt content is required (min 10 characters)</small>
+      }
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-3 pt-4 border-t border-base-300">
+      <button
+        type="button"
+        class="btn btn-ghost btn-sm"
+        (click)="onCancelPromptForm()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary btn-sm"
+        [disabled]="!promptForm.valid"
+      >
+        {{ selectedPrompt() ? 'Update' : 'Create' }}
+      </button>
+    </div>
+  </form>
+</p-dialog>
+
+<!-- Confirm Dialog -->
+<p-confirmdialog />

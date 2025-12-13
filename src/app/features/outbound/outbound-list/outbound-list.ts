@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +12,9 @@ import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { RouterLink } from "@angular/router";
 
+import { CampaignsApiService } from '../../../core/services/campaigns-api';
+import { Auth } from '../../../core/services/auth';
+import { ICampaign } from '../../../core/models/campaign';
 
 @Component({
   selector: 'app-outbound-list',
@@ -25,129 +28,126 @@ import { RouterLink } from "@angular/router";
     TooltipModule,
     MenuModule,
     RouterLink
-],
+  ],
   templateUrl: './outbound-list.html',
   styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export default class OutboundList {
- visible: boolean = false;
+export default class OutboundList implements OnInit {
+  private readonly campaignsApi = inject(CampaignsApiService);
+  private readonly auth = inject(Auth);
+
+  campaigns = signal<ICampaign[]>([]);
+  totalRecords = signal<number>(0);
+  loading = signal<boolean>(false);
+  selectedCampaigns = signal<ICampaign[]>([]);
+
+  currentPage = signal<number>(1);
+  pageSize = signal<number>(10);
+  first = signal<number>(0);
+
   menuItems: MenuItem[] = [];
-  selectedContact: any = null;
+  selectedCampaign: ICampaign | null = null;
 
-  first = 0;
+  companyId = computed(() => this.auth.currentUser()?.company_id);
 
-  rows = 10;
-
-  products: any[] = [
-    {
-      id: '1000',
-      code: 'f230fh0g3',
-      name: 'Bamboo Watch',
-      description: 'Product Description',
-      image: 'bamboo-watch.jpg',
-      price: 65,
-      category: 'Accessories',
-      quantity: 24,
-      inventoryStatus: 'INSTOCK',
-      rating: 5,
-    },
-    {
-      id: '1000',
-      code: 'f230fh0g3',
-      name: 'Bamboo Watch',
-      description: 'Product Description',
-      image: 'bamboo-watch.jpg',
-      price: 65,
-      category: 'Accessories',
-      quantity: 24,
-      inventoryStatus: 'INSTOCK',
-      rating: 5,
-    },
-    {
-      id: '1000',
-      code: 'f230fh0g3',
-      name: 'Bamboo Watch',
-      description: 'Product Description',
-      image: 'bamboo-watch.jpg',
-      price: 65,
-      category: 'Accessories',
-      quantity: 24,
-      inventoryStatus: 'INSTOCK',
-      rating: 5,
-    },
-    {
-      id: '1000',
-      code: 'f230fh0g3',
-      name: 'Bamboo Watch',
-      description: 'Product Description',
-      image: 'bamboo-watch.jpg',
-      price: 65,
-      category: 'Accessories',
-      quantity: 24,
-      inventoryStatus: 'INSTOCK',
-      rating: 5,
-    },
-    {
-      id: '1000',
-      code: 'f230fh0g3',
-      name: 'Bamboo Watch',
-      description: 'Product Description',
-      image: 'bamboo-watch.jpg',
-      price: 65,
-      category: 'Accessories',
-      quantity: 24,
-      inventoryStatus: 'INSTOCK',
-      rating: 5,
-    },
-  ];
-
-  selectedProducts!: any;
-
-  pageChange(event: any) {
-    this.first = event.first;
-    this.rows = event.rows;
+  ngOnInit(): void {
+    this.loadCampaigns();
   }
 
-  isLastPage(): boolean {
-    return this.products ? this.first + this.rows >= this.products.length : true;
+  loadCampaigns(): void {
+    const companyId = this.companyId();
+    if (!companyId) {
+      console.error('No company ID found');
+      return;
+    }
+
+    this.loading.set(true);
+    this.campaignsApi.getCampaigns(companyId, this.currentPage(), this.pageSize(), 'outbound')
+      .subscribe({
+        next: (response) => {
+          this.campaigns.set(response.results);
+          this.totalRecords.set(response.count);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading campaigns:', error);
+          this.loading.set(false);
+        }
+      });
   }
 
-  isFirstPage(): boolean {
-    return this.products ? this.first === 0 : true;
+  pageChange(event: any): void {
+    this.first.set(event.first);
+    this.pageSize.set(event.rows);
+    this.currentPage.set(Math.floor(event.first / event.rows) + 1);
+    this.loadCampaigns();
   }
 
-  showMenu(event: Event, contact: any, menu: Menu) {
-    this.selectedContact = contact;
+  showMenu(event: Event, campaign: ICampaign, menu: Menu): void {
+    this.selectedCampaign = campaign;
     this.menuItems = [
       {
         label: 'Edit',
         icon: 'fa-regular fa-pen-to-square',
-        command: () => this.editContact(contact),
+        command: () => this.editCampaign(campaign),
       },
       {
         label: 'Delete',
         icon: 'fa-regular fa-trash-can',
         styleClass: 'text-red-500',
-        command: () => this.deleteContact(contact),
+        command: () => this.deleteCampaign(campaign),
       },
     ];
     menu.toggle(event);
   }
 
-  editContact(contact: any) {
-    console.log('Editing contact:', contact);
-    // Aquí puedes agregar la lógica para editar
-    this.visible = true;
+  editCampaign(campaign: ICampaign): void {
+    console.log('Editing campaign:', campaign);
+    // Navigate to edit page or open edit dialog
   }
 
-  deleteContact(contact: any) {
-    console.log('Deleting contact:', contact);
-    // Aquí puedes agregar la lógica para eliminar
-    if (confirm('Are you sure you want to delete this contact?')) {
-      const index = this.products.indexOf(contact);
-      if (index > -1) {
-        this.products.splice(index, 1);
-      }
+  deleteCampaign(campaign: ICampaign): void {
+    const companyId = this.companyId();
+    if (!companyId) return;
+
+    if (confirm(`Are you sure you want to delete the campaign "${campaign.name}"?`)) {
+      this.campaignsApi.deleteCampaign(companyId, campaign.id)
+        .subscribe({
+          next: () => {
+            this.loadCampaigns();
+          },
+          error: (error) => {
+            console.error('Error deleting campaign:', error);
+          }
+        });
     }
+  }
+
+  getSequenceCount(campaign: ICampaign): number {
+    return campaign.sequences?.length || 0;
+  }
+
+  getSources(campaign: ICampaign): string {
+    if (!campaign.sources || campaign.sources.length === 0) {
+      return 'N/A';
+    }
+    return campaign.sources.join(', ');
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  getStatusLabel(isActive: boolean): string {
+    return isActive ? 'Active' : 'Inactive';
+  }
+
+  getStatusClass(isActive: boolean): string {
+    return isActive ? 'badge-success' : 'badge-error';
   }
 }

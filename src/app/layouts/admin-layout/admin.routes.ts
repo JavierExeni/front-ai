@@ -31,6 +31,10 @@ export const adminRoutes: Routes = [
         path: 'subscription-plans',
         loadComponent: () => import('../../features/subcription-plans/subcription-plans')
       },
+      {
+        path: 'voice-agents',
+        loadComponent: () => import('../../features/voice-agents/voice-agents')
+      },
        {
         path: '**',
         redirectTo: 'dashboard',

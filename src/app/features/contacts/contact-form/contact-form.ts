@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input, output, effect } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InputText } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 
 import { PhoneInputComponent } from '../../../shared/components/phone-input/phone-input';
+import { Contact } from '../../../core/models/contact';
 
 @Component({
   selector: 'contact-form',
@@ -16,15 +17,25 @@ import { PhoneInputComponent } from '../../../shared/components/phone-input/phon
 export class ContactForm {
   private readonly fb = inject(FormBuilder);
 
+  // Inputs
+  initialData = input<Contact | null>(null);
+
+  // Outputs
+  submit = output<any>();
+  cancel = output<void>();
+
   states = [
     {
-      name: 'Interested',
+      name: 'interested',
+      label: 'Interested',
     },
     {
-      name: 'Not Interested',
+      name: 'not_interested',
+      label: 'Not Interested',
     },
     {
-      name: 'Callback Required',
+      name: 'callback_required',
+      label: 'Callback Required',
     },
   ];
 
@@ -35,12 +46,52 @@ export class ContactForm {
     title: [''],
     email: ['', [Validators.required, Validators.email]],
     phoneNumber: [null, [Validators.required]],
-    status: [''],
+    status: [[]],
   });
+
+  constructor() {
+    // Effect to populate form when initialData changes
+    effect(() => {
+      const data = this.initialData();
+      if (data) {
+        this.contactForm.patchValue({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          company: data.company_client,
+          title: data.title,
+          email: data.email,
+          phoneNumber: data.phone,
+          status: data.status || [],
+        });
+      } else {
+        this.contactForm.reset();
+      }
+    });
+  }
 
   onSubmit(): void {
     if (this.contactForm.valid) {
-      console.log('Form submitted:', this.contactForm.value);
+      const formValue = this.contactForm.value;
+
+      // Transform form data to API format
+      const contactData = {
+        first_name: formValue.firstName,
+        last_name: formValue.lastName,
+        company_client: formValue.company,
+        title: formValue.title,
+        email: formValue.email,
+        phone: formValue.phoneNumber,
+        status: formValue.status || [],
+      };
+
+      this.submit.emit(contactData);
+    } else {
+      this.contactForm.markAllAsTouched();
     }
+  }
+
+  onCancel(): void {
+    this.contactForm.reset();
+    this.cancel.emit();
   }
 }

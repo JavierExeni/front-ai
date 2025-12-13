@@ -21,35 +21,60 @@
   </div>
 
   <div class="rounded-lg overflow-hidden mt-4">
-    <p-table [value]="products" [paginator]="true" [rows]="10" [first]="first" [showCurrentPageReport]="true"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" (onPage)="pageChange($event)"
-      [rowsPerPageOptions]="[10, 25, 50]" [(selection)]="selectedProducts" dataKey="code" class="text-sm"
+    <p-table
+      [value]="campaigns()"
+      [paginator]="true"
+      [rows]="pageSize()"
+      [first]="first()"
+      [totalRecords]="totalRecords()"
+      [lazy]="true"
+      [loading]="loading()"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      (onPage)="pageChange($event)"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [(selection)]="selectedCampaigns"
+      dataKey="id"
+      class="text-sm"
       paginatorStyleClass="rounded-none">
       <ng-template #header>
         <tr>
           <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Phone</th>
+          <th>Campaign Name</th>
+          <th>Sequences</th>
           <th>Source</th>
+          <th>Create Date</th>
           <th>Status</th>
           <th style="width: 4rem"></th>
         </tr>
       </ng-template>
-      <ng-template #body let-product>
+      <ng-template #body let-campaign>
         <tr>
           <td>
-            <p-tableCheckbox [value]="product" />
+            <p-tableCheckbox [value]="campaign" />
           </td>
-          <td>{{ product.code }}</td>
-          <td>{{ product.name }}</td>
-          <td>{{ product.category }}</td>
-          <td>{{ product.quantity }}</td>
-          <td>{{ product.quantity }}</td>
+          <td>
+            <div class="font-medium">{{ campaign.name }}</div>
+            @if (campaign.description) {
+              <div class="text-sm text-base-content/60 mt-1">{{ campaign.description }}</div>
+            }
+          </td>
+          <td>
+            <span class="badge badge-outline">{{ getSequenceCount(campaign) }}</span>
+          </td>
+          <td>{{ getSources(campaign) }}</td>
+          <td>{{ formatDate(campaign.created_at) }}</td>
+          <td>
+            <span
+              class="badge badge-sm"
+              [class]="getStatusClass(campaign.is_active)">
+              {{ getStatusLabel(campaign.is_active) }}
+            </span>
+          </td>
           <td>
             <div class="flex justify-center items-center">
               <button #menuButton pButton type="button" icon="fa-solid fa-ellipsis-vertical"
-                (click)="showMenu($event, product, menu)" class="p-button-text p-button-rounded p-button-sm"
+                (click)="showMenu($event, campaign, menu)" class="p-button-text p-button-rounded p-button-sm"
                 pTooltip="Actions" tooltipPosition="left"></button>
               <p-menu #menu [model]="menuItems" [popup]="true" appendTo="body"></p-menu>
             </div>

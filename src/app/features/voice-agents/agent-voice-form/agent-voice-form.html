@@ -1,0 +1,151 @@
+<div class="agent-voice-form-container">
+  <form [formGroup]="agentForm" (ngSubmit)="onSubmit()">
+    <!-- Agent Name -->
+    <div class="form-field">
+      <label for="agent-name" class="form-label">Agent Name</label>
+      <input
+        id="agent-name"
+        type="text"
+        pInputText
+        formControlName="name"
+        placeholder="Enter Agent Name..."
+        pSize="small"
+        class="w-full"
+      />
+      @if (nameControl?.invalid && nameControl?.touched) {
+        <small class="text-error">Agent name is required (min 2 characters)</small>
+      }
+    </div>
+
+    <!-- Agent Title -->
+    <div class="form-field">
+      <label for="agent-title" class="form-label">Agent Title</label>
+      <input
+        id="agent-title"
+        type="text"
+        pInputText
+        formControlName="title"
+        pSize="small"
+        placeholder="Enter Agent Title..."
+        class="w-full"
+      />
+      @if (titleControl?.invalid && titleControl?.touched) {
+        <small class="text-error">Agent title is required (min 2 characters)</small>
+      }
+    </div>
+
+    <!-- Select Voice -->
+    <div class="form-field">
+      <label class="form-label">Select Voice</label>
+
+      <!-- Loading State -->
+      @if (isLoadingVoices()) {
+        <div class="flex justify-center items-center py-8">
+          <span class="loading loading-spinner loading-md text-primary"></span>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (voicesError() && !isLoadingVoices()) {
+        <div role="alert" class="alert alert-error">
+          <span>{{ voicesError() }}</span>
+          <button type="button" class="btn btn-sm" (click)="loadVoices()">
+            Try Again
+          </button>
+        </div>
+      }
+
+      <!-- Voice Carousel -->
+      @if (!isLoadingVoices() && !voicesError() && voices().length > 0) {
+        <div class="voice-carousel-wrapper">
+          <p-carousel
+            [value]="voices()"
+            [numVisible]="5"
+            [numScroll]="1"
+            [circular]="false"
+            [showNavigators]="false"
+            [responsiveOptions]="carouselResponsiveOptions"
+          >
+            <ng-template let-voice pTemplate="item">
+              <div class="voice-item-wrapper">
+                <div
+                  class="voice-item"
+                  [class.selected]="isVoiceSelected(voice.id)"
+                  (click)="selectVoice(voice)"
+                  (mouseenter)="setHoveredVoice(voice.id)"
+                  (mouseleave)="setHoveredVoice(null)"
+                >
+                  <!-- Avatar Container -->
+                  <div class="voice-avatar-container">
+                    <div class="avatar">
+                      <div class="w-20 rounded-full">
+                        @if (voice.avatar) {
+                          <img [src]="voice.avatar" [alt]="voice.name" />
+                        } @else {
+                          <div class="bg-primary text-primary-content flex items-center justify-center w-full h-full text-2xl font-bold">
+                            {{ voice.name.charAt(0).toUpperCase() }}
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Play Button Overlay -->
+                    @if (isVoiceHovered(voice.id) || isVoicePlaying(voice.id)) {
+                      <div class="play-button-overlay">
+                        <button
+                          type="button"
+                          class="play-button"
+                          [class.playing]="isVoicePlaying(voice.id)"
+                          (click)="playVoice(voice, $event)"
+                          pButton
+                          [icon]="isVoicePlaying(voice.id) ? 'pi pi-pause' : 'pi pi-play'"
+                          [rounded]="true"
+                          severity="info"
+                        ></button>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Voice Name -->
+                  <div class="voice-name">
+                    {{ voice.name }}
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </p-carousel>
+        </div>
+      }
+
+      <!-- No voices available -->
+      @if (!isLoadingVoices() && !voicesError() && voices().length === 0) {
+        <div class="text-center py-8 text-base-content/60">
+          No voices available.
+        </div>
+      }
+
+      <!-- Selected voice validation -->
+      @if (agentForm.touched && !selectedVoice()) {
+        <small class="text-error">Please select a voice</small>
+      }
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="btn btn-ghost"
+        (click)="onCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="!isFormValid"
+      >
+        Add Agent
+      </button>
+    </div>
+  </form>
+</div>

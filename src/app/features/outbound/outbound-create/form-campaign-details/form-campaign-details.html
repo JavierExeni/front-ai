@@ -1,21 +1,50 @@
-<div class="card card-border border-base-300 grid grid-cols-2  bg-base-200 p-4">
-  <form>
-    <h1>Campaign Details</h1>
-    <p>Provide basic information about your outbound campaign.</p>
-    <div>
-      <div class="relative flex flex-col gap-2">
-        <label for="campaignName" class="text-sm font-medium">Campaign Name</label>
-        <input pInputText id="campaignName" type="text" formControlName="campaign_name" pSize="small" class="w-full"
-          readonly />
+<div class="flex justify-center items-start">
+  <div class="w-full max-w-xl">
+    <form [formGroup]="campaignForm" class="bg-surface-900 rounded-lg px-6 space-y-6">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-semibold mb-2">Campaign Details</h2>
+        <p class="text-surface-400 text-sm">Provide basic information about your outbound campaign .</p>
       </div>
-      <div class="relative flex flex-col gap-2">
-        <label for="campaignName" class="text-sm font-medium">Campaign Description</label>
-        <textarea rows="5" cols="30" pTextarea fluid></textarea>
+
+      <div class="flex flex-col gap-2">
+        <label for="campaignName" class="text-sm font-medium text-surface-200">Campaign Name</label>
+        <input pInputText id="campaignName" pSize="small" type="text" formControlName="campaignName" class="w-full"
+          placeholder="GHL Outbound" />
       </div>
-      <div class="flex flex-auto flex-col gap-2">
-        <label for="campaignName" class="text-sm font-medium">Campaign Description</label>
-        <p-datepicker inputStyleClass="w-full" [iconDisplay]="'input'" [showIcon]="true" inputId="icondisplay" />
+
+      <div class="flex flex-col gap-2">
+        <label for="campaignDescription" class="text-sm font-medium text-surface-200">Campaign Description</label>
+        <textarea id="campaignDescription" rows="4" pTextarea pSize="small" formControlName="campaignDescription"
+          class="w-full" placeholder="test"></textarea>
       </div>
-    </div>
-  </form>
+
+      <div class="flex flex-col gap-2">
+        <label for="startDate" class="text-sm font-medium text-surface-200">Campaign Start Date</label>
+        <p-datepicker inputId="startDate" formControlName="startDate" [showIcon]="true" [iconDisplay]="'input'"
+          dateFormat="MM dd, yy" placeholder="December 12th, 2025" inputStyleClass="w-full" size="small" />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <p-checkbox inputId="runsIndefinitely" formControlName="runsIndefinitely" [binary]="true" />
+        <label for="runsIndefinitely" class="text-sm font-medium text-surface-200 cursor-pointer">
+          This campaign runs indefinitely.
+        </label>
+      </div>
+
+      @if (!campaignForm.controls.runsIndefinitely.value) {
+      <div class="flex flex-col gap-2">
+        <label for="endDate" class="text-sm font-medium text-surface-200">Campaign End Date</label>
+        <p-datepicker inputId="endDate" formControlName="endDate" [showIcon]="true" [iconDisplay]="'input'"
+          dateFormat="MM dd, yy" placeholder="Select start date first"
+          [disabled]="!campaignForm.controls.startDate.value" [minDate]="campaignForm.controls.startDate.value"
+          inputStyleClass="w-full" size="small" />
+      </div>
+      }
+
+      <div class="flex justify-between pt-4">
+        <p-button label="Cancel" severity="secondary" (onClick)="onCancel()" />
+        <p-button label="Continue" (onClick)="onContinue()" [disabled]="!campaignForm.valid" />
+      </div>
+    </form>
+  </div>
 </div>

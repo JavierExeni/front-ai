@@ -38,6 +38,9 @@ importers:
       ngx-sonner:
         specifier: ^3.1.0
         version: 3.1.0(@angular/common@21.0.2(@angular/core@21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2))
+      primeicons:
+        specifier: ^7.0.0
+        version: 7.0.0
       primeng:
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(e563bbf92c6eb1ec59e0db4311aecdaa)
@@ -2569,6 +2572,9 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  primeicons@7.0.0:
+    resolution: {integrity: sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==}
 
   primeng@21.0.0-rc.1:
     resolution: {integrity: sha512-5e7d6UiAkKpsfhzJzOVy/GvDnxZy/zR2FvNgELefqhwlvpb001seuJGABD1Xi1H0lkXaFHFR+ype+MQYWcWuyQ==}
@@ -5506,6 +5512,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  primeicons@7.0.0: {}
 
   primeng@21.0.0-rc.1(e563bbf92c6eb1ec59e0db4311aecdaa):
     dependencies:
